@@ -45,7 +45,10 @@ export function MobileNav() {
                 <div className="relative">
                   <Icon className="w-5 h-5 text-pink-300" />
                   {item.badge && (
-                    <span className="absolute -top-1.5 -right-2.5 bg-[#ff4d6d] text-white text-[10px] font-bold px-1 rounded-full min-w-[16px] text-center border border-[#590d22]">
+                    <span
+                      key={item.badge}
+                      className="absolute -top-1.5 -right-2.5 bg-[#ff4d6d] text-white text-[10px] font-bold px-1 rounded-full min-w-[16px] text-center border border-[#590d22] animate-in zoom-in-75 duration-200"
+                    >
                       {item.badge}
                     </span>
                   )}

@@ -28,12 +28,12 @@ export function ShoppingListDrawer() {
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300"
+        className="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
         onClick={() => setIsDrawerOpen(false)}
       />
 
       {/* Slide-over panel */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10 animate-in slide-in-from-right duration-300 ease-out">
         <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col">
           {/* Header */}
           <div className="px-6 py-4 bg-[#590d22] text-white flex items-center justify-between shadow-xs">
@@ -239,6 +239,17 @@ export function ShoppingListDrawer() {
                 <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
+
+              <div className="text-center pt-1">
+                <Link
+                  href="/account/shopping-list"
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="text-xs text-rose-800 hover:text-[#590d22] font-medium hover:underline transition inline-flex items-center gap-1"
+                >
+                  <span>Or view full shopping list page</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           )}
         </div>

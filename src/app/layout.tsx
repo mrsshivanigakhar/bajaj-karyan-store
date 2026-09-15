@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ShoppingListProvider } from '@/context/shopping-list-context';
 import { ShoppingListDrawer } from '@/components/cart/ShoppingListDrawer';
+import { ShoppingListNotification } from '@/components/cart/ShoppingListNotification';
 
 export const metadata: Metadata = {
   title: 'Bajaj Karyan Store — Confectionery & Grocery Ordering',
@@ -35,6 +36,7 @@ export default function RootLayout({
         <ShoppingListProvider>
           {children}
           <ShoppingListDrawer />
+          <ShoppingListNotification />
         </ShoppingListProvider>
       </body>
     </html>

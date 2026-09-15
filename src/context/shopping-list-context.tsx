@@ -3,6 +3,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ShoppingListItem } from '@/types/database';
 
+export interface ShoppingListNotification {
+  id: string;
+  name: string;
+  quantity: number;
+  unitType?: string;
+  imageUrl?: string | null;
+}
+
 interface ShoppingListContextType {
   items: ShoppingListItem[];
   addItem: (item: Omit<ShoppingListItem, 'quantity'> & { quantity?: number }) => void;
@@ -16,6 +24,8 @@ interface ShoppingListContextType {
   estimatedSubtotal: number;
   isDrawerOpen: boolean;
   setIsDrawerOpen: (open: boolean) => void;
+  notification: ShoppingListNotification | null;
+  dismissNotification: () => void;
 }
 
 const ShoppingListContext = createContext<ShoppingListContextType | undefined>(undefined);
@@ -26,6 +36,18 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   const [items, setItems] = useState<ShoppingListItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [notification, setNotification] = useState<ShoppingListNotification | null>(null);
+
+  // Auto-dismiss notification after 3.5 seconds
+  useEffect(() => {
+    if (!notification) return;
+    const timer = setTimeout(() => {
+      setNotification(null);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [notification]);
+
+  const dismissNotification = () => setNotification(null);
 
   // Load from local storage
   useEffect(() => {
@@ -52,9 +74,10 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   }, [items, isLoaded]);
 
   const addItem = (item: Omit<ShoppingListItem, 'quantity'> & { quantity?: number }) => {
+    const qtyToAdd = item.quantity && item.quantity > 0 ? item.quantity : 1;
+
     setItems((prev) => {
       const existingIndex = prev.findIndex((i) => i.productId === item.productId);
-      const qtyToAdd = item.quantity && item.quantity > 0 ? item.quantity : 1;
 
       if (existingIndex > -1) {
         const updated = [...prev];
@@ -75,7 +98,15 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
         },
       ];
     });
-    setIsDrawerOpen(true);
+
+    // Graceful feedback notification without forcefully opening the drawer
+    setNotification({
+      id: Date.now().toString(),
+      name: item.name,
+      quantity: qtyToAdd,
+      unitType: item.unitType,
+      imageUrl: item.imageUrl,
+    });
   };
 
   const removeItem = (productId: string) => {
@@ -145,6 +176,8 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
         estimatedSubtotal,
         isDrawerOpen,
         setIsDrawerOpen,
+        notification,
+        dismissNotification,
       }}
     >
       {children}

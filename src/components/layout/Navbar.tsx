@@ -154,7 +154,10 @@ export function Navbar() {
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">My List</span>
               {totalItemsCount > 0 && (
-                <span className="bg-white text-[#590d22] font-bold text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm">
+                <span
+                  key={totalItemsCount}
+                  className="bg-white text-[#590d22] font-bold text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm animate-in zoom-in-75 duration-200"
+                >
                   {totalItemsCount}
                 </span>
               )}
