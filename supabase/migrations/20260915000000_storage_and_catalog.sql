@@ -1,25 +1,32 @@
--- Bajaj Karyan Store — Seed Data
--- Migration: supabase/seed.sql
+-- Bajaj Karyan Store — Storage Setup & Expanded Catalog Migration
+-- Migration: 20260915000000_storage_and_catalog.sql
 
--- 1. Store Settings (default row)
-INSERT INTO public.store_settings (
-    store_name, phone, email, address, city, state, pincode,
-    opening_hours, delivery_info, footer_text, low_stock_threshold, default_delivery_charge, order_prefix
-) VALUES (
-    'Bajaj Karyan Store',
-    '+91 98765 43210',
-    'contact@bajajkaryan.com',
-    'Shop No. 14, Main Market, Near Clock Tower',
-    'Amritsar',
-    'Punjab',
-    '143001',
-    'Mon - Sat: 8:00 AM - 9:30 PM | Sun: 9:00 AM - 7:00 PM',
-    'Free doorstep delivery on orders above ₹500 across Amritsar',
-    'Bajaj Karyan Store — Premium Confectionery & Daily Kiryana Essentials Since 1998',
-    10,
-    30,
-    'BKS'
-) ON CONFLICT DO NOTHING;
+-- 1. Create Public Storage Bucket 'store'
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('store', 'store', TRUE)
+ON CONFLICT (id) DO NOTHING;
+
+-- Policies for 'store' bucket
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies
+        WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Public Access to Store Bucket'
+    ) THEN
+        CREATE POLICY "Public Access to Store Bucket"
+        ON storage.objects FOR SELECT
+        USING (bucket_id = 'store');
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies
+        WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Allow Uploads to Store Bucket'
+    ) THEN
+        CREATE POLICY "Allow Uploads to Store Bucket"
+        ON storage.objects FOR INSERT
+        WITH CHECK (bucket_id = 'store');
+    END IF;
+END $$;
 
 -- 2. Upsert 16 Store Categories
 INSERT INTO public.categories (id, name, slug, description, image_url, sort_order) VALUES
@@ -151,3 +158,16 @@ ON CONFLICT (slug) DO UPDATE SET
     is_available = EXCLUDED.is_available,
     is_featured = EXCLUDED.is_featured,
     is_active = EXCLUDED.is_active;
+
+-- ==========================================================
+-- OPTIONAL HELPER: Switch to Supabase Storage Bucket URLs
+-- ==========================================================
+-- When you drag-and-drop the images from `public/images/categories/` and
+-- `public/images/products/` into your Supabase Storage bucket 'store',
+-- run the two lines below (replace YOUR_SUPABASE_PROJECT_ID with your real ID):
+--
+-- UPDATE public.categories
+-- SET image_url = REPLACE(image_url, '/images/categories/', 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co/storage/v1/object/public/store/categories/');
+--
+-- UPDATE public.products
+-- SET image_url = REPLACE(image_url, '/images/products/', 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co/storage/v1/object/public/store/products/');
