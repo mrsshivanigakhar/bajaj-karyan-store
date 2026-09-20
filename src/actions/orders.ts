@@ -112,15 +112,24 @@ export async function createOrderAction(formData: {
       });
     }
 
-    // Delivery charge from settings
+    // Delivery charge & order prefix from settings
     let deliveryCharge = 30;
+    let orderPrefix = 'BKS';
     try {
-      const { data: settings } = await supabase.from('store_settings').select('default_delivery_charge').limit(1).single();
-      if (settings?.default_delivery_charge !== undefined) {
+      const { data: settings } = await supabase
+        .from('store_settings')
+        .select('default_delivery_charge, order_prefix')
+        .limit(1)
+        .single();
+      if (settings?.default_delivery_charge !== undefined && settings?.default_delivery_charge !== null) {
         deliveryCharge = Number(settings.default_delivery_charge);
+      }
+      if (settings?.order_prefix) {
+        orderPrefix = settings.order_prefix.trim().toUpperCase();
       }
     } catch {
       deliveryCharge = fallbackStoreSettings.default_delivery_charge;
+      orderPrefix = fallbackStoreSettings.order_prefix;
     }
 
     // Free delivery above 500
@@ -133,7 +142,7 @@ export async function createOrderAction(formData: {
     // Generate Human-friendly order number (fallback if trigger not active)
     const orderYear = new Date().getFullYear();
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    const fallbackOrderNumber = `BKS-${orderYear}-${randomSuffix}`;
+    const fallbackOrderNumber = `${orderPrefix}-${orderYear}-${randomSuffix}`;
 
     const orderPayload = {
       customer_id: currentUser ? currentUser.id : null,

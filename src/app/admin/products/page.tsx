@@ -5,6 +5,8 @@ import { getCategories, getProducts } from '@/services/store-service';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 import { Plus, Search, Edit2, Trash2, Package, Check, X, Info } from 'lucide-react';
 import { AdminProductDeleteBtn } from './AdminProductDeleteBtn';
+import { AdminProductFilter } from './AdminProductFilter';
+import { ProductsReportToolbar } from './ProductsReportToolbar';
 
 interface AdminProductsPageProps {
   searchParams: Promise<{
@@ -18,13 +20,19 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
   const currentSearch = params.search || '';
   const currentCategory = params.category || '';
 
-  const [categories, products] = await Promise.all([
+  const isFiltered = Boolean(currentSearch || currentCategory);
+
+  const [categories, products, allProducts] = await Promise.all([
     getCategories(),
     getProducts({
       search: currentSearch || undefined,
       categorySlug: currentCategory || undefined,
     }),
+    isFiltered ? getProducts() : Promise.resolve([]),
   ]);
+
+  const fullProductsList = isFiltered ? allProducts : products;
+  const currentCategoryObj = categories.find((c) => c.slug === currentCategory);
 
   return (
     <div className="space-y-6">
@@ -48,50 +56,22 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
         </Link>
       </div>
 
-      {/* Filter toolbar */}
-      <div className="bg-white p-4 rounded-3xl border border-rose-100 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-        <form method="GET" action="/admin/products" className="relative w-full sm:max-w-md">
-          {currentCategory && (
-            <input type="hidden" name="category" value={currentCategory} />
-          )}
-          <input
-            type="text"
-            name="search"
-            defaultValue={currentSearch}
-            placeholder="Search by name, SKU..."
-            className="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
-          />
-          <Search className="w-4 h-4 text-rose-400 absolute left-3.5 top-3" />
-        </form>
+      {/* Reports & Export Toolbar */}
+      <ProductsReportToolbar
+        filteredProducts={products}
+        allProducts={fullProductsList}
+        categories={categories}
+        currentCategoryName={currentCategoryObj?.name}
+        currentSearch={currentSearch}
+      />
 
-        <div className="flex items-center gap-2 text-xs w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <Link
-            href={`/admin/products${currentSearch ? `?search=${currentSearch}` : ''}`}
-            className={`px-3 py-1.5 rounded-full font-semibold whitespace-nowrap transition ${
-              !currentCategory
-                ? 'bg-[#590d22] text-white'
-                : 'bg-rose-50 text-gray-700 hover:bg-rose-100'
-            }`}
-          >
-            All
-          </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/admin/products?category=${c.slug}${
-                currentSearch ? `&search=${currentSearch}` : ''
-              }`}
-              className={`px-3 py-1.5 rounded-full font-semibold whitespace-nowrap transition ${
-                currentCategory === c.slug
-                  ? 'bg-[#590d22] text-white'
-                  : 'bg-rose-50 text-gray-700 hover:bg-rose-100'
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* Filter toolbar with Category Dropdown */}
+      <AdminProductFilter
+        categories={categories}
+        currentCategory={currentCategory}
+        currentSearch={currentSearch}
+        totalProductsCount={products.length}
+      />
 
       {/* Table */}
       <div className="bg-white rounded-3xl border border-rose-100 shadow-xs overflow-hidden">

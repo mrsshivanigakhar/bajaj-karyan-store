@@ -5,6 +5,8 @@ import { Product } from '@/types/database';
 import { updateStockAction } from '@/actions/products';
 import { formatUnit } from '@/lib/utils';
 import { Search, AlertTriangle, CheckCircle2, XCircle, Plus, Minus, Save, Package } from 'lucide-react';
+import { AdminReportToolbar } from '@/components/admin/AdminReportToolbar';
+import { generateInventoryReport } from '@/lib/reports/report-generators';
 
 export function InventoryClient({
   initialProducts,
@@ -77,8 +79,34 @@ export function InventoryClient({
   ).length;
   const outCount = products.filter((p) => p.stock_quantity <= 0).length;
 
+  const handleExportPdf = (scope: 'filtered' | 'all') => {
+    const list = scope === 'filtered' ? filteredProducts : products;
+    generateInventoryReport(list, lowStockThreshold, 'pdf', {
+      filter: scope === 'filtered' ? filter : undefined,
+      search: scope === 'filtered' ? search : undefined,
+    });
+  };
+
+  const handleExportExcel = (scope: 'filtered' | 'all') => {
+    const list = scope === 'filtered' ? filteredProducts : products;
+    generateInventoryReport(list, lowStockThreshold, 'excel', {
+      filter: scope === 'filtered' ? filter : undefined,
+      search: scope === 'filtered' ? search : undefined,
+    });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Reports & Export Toolbar */}
+      <AdminReportToolbar
+        title="Warehouse Inventory & Valuation Report"
+        subtitle="Export stock levels, low-stock warnings, and holding inventory valuations."
+        totalCount={products.length}
+        filteredCount={filteredProducts.length}
+        onExportPdf={handleExportPdf}
+        onExportExcel={handleExportExcel}
+      />
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <button

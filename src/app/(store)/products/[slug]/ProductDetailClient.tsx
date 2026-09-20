@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { Product } from '@/types/database';
 import { useShoppingList } from '@/context/shopping-list-context';
-import { Minus, Plus, ShoppingBag, Check } from 'lucide-react';
+import { Minus, Plus, ShoppingBag, Check, Zap } from 'lucide-react';
+import { FavoriteButton } from '@/components/products/FavoriteButton';
 
 export function ProductDetailClient({ product }: { product: Product }) {
-  const { addItem } = useShoppingList();
+  const { addItem, setIsDrawerOpen } = useShoppingList();
   const isWeight = product.unit_type === 'kg' || product.unit_type === 'gram';
   const step = isWeight ? 0.5 : 1;
   const initialQty = isWeight ? 0.5 : 1;
@@ -90,31 +91,53 @@ export function ProductDetailClient({ product }: { product: Product }) {
         />
       </div>
 
-      {/* Add Button */}
-      <button
-        type="button"
-        onClick={handleAddToList}
-        disabled={!product.is_available}
-        className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition transform active:scale-[0.99] ${
-          !product.is_available
-            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-            : isAdded
-            ? 'bg-green-600 text-white'
-            : 'bg-[#800f2f] hover:bg-[#a4133c] text-white hover:shadow-lg'
-        }`}
-      >
-        {isAdded ? (
-          <>
-            <Check className="w-5 h-5" />
-            <span>Added to Shopping List!</span>
-          </>
-        ) : (
-          <>
-            <ShoppingBag className="w-5 h-5" />
-            <span>Add to My Shopping List</span>
-          </>
-        )}
-      </button>
+      {/* Action Buttons: Add to List, Buy Now, and Save to Favourites */}
+      <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+        <button
+          type="button"
+          onClick={handleAddToList}
+          disabled={!product.is_available}
+          className={`flex-1 w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition transform active:scale-[0.99] ${
+            !product.is_available
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              : isAdded
+              ? 'bg-green-600 text-white'
+              : 'bg-[#800f2f] hover:bg-[#a4133c] text-white hover:shadow-lg'
+          }`}
+        >
+          {isAdded ? (
+            <>
+              <Check className="w-5 h-5" />
+              <span>Added to List!</span>
+            </>
+          ) : (
+            <>
+              <ShoppingBag className="w-5 h-5" />
+              <span>Add to Shopping List</span>
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            handleAddToList();
+            setIsDrawerOpen(true);
+          }}
+          disabled={!product.is_available}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition transform active:scale-[0.99] disabled:bg-gray-200 disabled:text-gray-400"
+        >
+          <Zap className="w-4 h-4" />
+          <span>Buy Now</span>
+        </button>
+
+        <FavoriteButton
+          product={product}
+          size="md"
+          showLabel={true}
+          className="w-full sm:w-auto py-3.5 justify-center"
+        />
+      </div>
     </div>
   );
 }

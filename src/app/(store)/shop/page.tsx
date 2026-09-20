@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { getCategories, getProducts } from '@/services/store-service';
+import { getCategories, getPaginatedProducts } from '@/services/store-service';
 import { ProductGrid } from '@/components/products/ProductGrid';
+import { Pagination } from '@/components/ui/Pagination';
 import { Search, Filter, SlidersHorizontal, Check } from 'lucide-react';
 
 interface ShopPageProps {
@@ -9,6 +10,7 @@ interface ShopPageProps {
     category?: string;
     search?: string;
     priceType?: string;
+    page?: string;
   }>;
 }
 
@@ -17,25 +19,20 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const currentCategory = params.category || '';
   const currentSearch = params.search || '';
   const currentPriceType = params.priceType || 'all';
+  const currentPage = Math.max(1, parseInt(params.page || '1') || 1);
 
-  const [categories, allProducts] = await Promise.all([
+  const [categories, paginatedResult] = await Promise.all([
     getCategories(),
-    getProducts({
+    getPaginatedProducts({
       categorySlug: currentCategory || undefined,
       search: currentSearch || undefined,
+      priceType: currentPriceType !== 'all' ? currentPriceType : undefined,
+      page: currentPage,
+      pageSize: 20,
     }),
   ]);
 
-  // Filter by price type if specified
-  const products = allProducts.filter((p) => {
-    if (currentPriceType === 'fixed') {
-      return p.price !== null;
-    }
-    if (currentPriceType === 'request') {
-      return p.price === null;
-    }
-    return true;
-  });
+  const { products, total, totalPages } = paginatedResult;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -149,26 +146,66 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 <span>All Categories</span>
               </Link>
 
-              {categories.map((cat) => {
-                const isActive = currentCategory === cat.slug;
-                return (
-                  <Link
-                    key={cat.id}
-                    href={`/shop?${new URLSearchParams({
-                      category: cat.slug,
-                      ...(currentSearch ? { search: currentSearch } : {}),
-                      ...(currentPriceType !== 'all' ? { priceType: currentPriceType } : {}),
-                    }).toString()}`}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition ${
-                      isActive
-                        ? 'bg-[#590d22] text-white'
-                        : 'text-gray-700 hover:bg-rose-50 hover:text-[#800f2f]'
-                    }`}
-                  >
-                    <span>{cat.name}</span>
-                  </Link>
-                );
-              })}
+              {(() => {
+                const mainCats = categories.filter((c) => !c.slug.includes('--'));
+                const subCats = categories.filter((c) => c.slug.includes('--'));
+
+                return mainCats.map((main) => {
+                  const isMainActive = currentCategory === main.slug;
+                  const isParentOfActive = currentCategory.startsWith(`${main.slug}--`);
+                  const children = subCats.filter((s) => s.slug.startsWith(`${main.slug}--`));
+
+                  return (
+                    <div key={main.id} className="space-y-1">
+                      <Link
+                        href={`/shop?${new URLSearchParams({
+                          category: main.slug,
+                          ...(currentSearch ? { search: currentSearch } : {}),
+                          ...(currentPriceType !== 'all' ? { priceType: currentPriceType } : {}),
+                        }).toString()}`}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition ${
+                          isMainActive
+                            ? 'bg-[#590d22] text-white font-bold'
+                            : isParentOfActive
+                            ? 'bg-rose-100 text-[#800f2f] font-semibold'
+                            : 'text-gray-700 hover:bg-rose-50 hover:text-[#800f2f]'
+                        }`}
+                      >
+                        <span>{main.name}</span>
+                        {children.length > 0 && (
+                          <span className="text-[11px] opacity-70">({children.length})</span>
+                        )}
+                      </Link>
+
+                      {/* Nested Sub-Categories */}
+                      {(isMainActive || isParentOfActive) && children.length > 0 && (
+                        <div className="pl-4 pr-1 py-1 space-y-0.5 border-l-2 border-rose-200 ml-3">
+                          {children.map((sub) => {
+                            const isSubActive = currentCategory === sub.slug;
+                            return (
+                              <Link
+                                key={sub.id}
+                                href={`/shop?${new URLSearchParams({
+                                  category: sub.slug,
+                                  ...(currentSearch ? { search: currentSearch } : {}),
+                                  ...(currentPriceType !== 'all' ? { priceType: currentPriceType } : {}),
+                                }).toString()}`}
+                                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+                                  isSubActive
+                                    ? 'bg-[#800f2f] text-white font-bold'
+                                    : 'text-gray-600 hover:bg-rose-50 hover:text-[#800f2f]'
+                                }`}
+                              >
+                                <span>↳ {sub.name}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
 
@@ -187,9 +224,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <main className="lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-gray-500">
-              Showing <strong className="text-gray-800">{products.length}</strong> products
+              Total <strong className="text-gray-900">{total}</strong> products
+              {totalPages > 1 && (
+                <span className="text-xs text-gray-400 ml-1.5">
+                  (Page {currentPage} of {totalPages})
+                </span>
+              )}
             </span>
-            {(currentCategory || currentSearch || currentPriceType !== 'all') && (
+            {(currentCategory || currentSearch || currentPriceType !== 'all' || currentPage > 1) && (
               <Link
                 href="/shop"
                 className="text-xs text-[#800f2f] hover:underline font-semibold"
@@ -202,6 +244,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <ProductGrid
             products={products}
             emptyMessage="No items match your search or filter criteria. Try clearing filters or searching for something else."
+          />
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={total}
+            pageSize={20}
+            baseUrl="/shop"
+            queryParams={{
+              category: currentCategory || undefined,
+              search: currentSearch || undefined,
+              priceType: currentPriceType !== 'all' ? currentPriceType : undefined,
+            }}
           />
         </main>
       </div>

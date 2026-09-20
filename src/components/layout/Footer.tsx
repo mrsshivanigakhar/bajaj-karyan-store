@@ -1,8 +1,17 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Truck, HeartHandshake } from 'lucide-react';
+import { useStoreSettings } from '@/context/store-settings-context';
 
 export function Footer() {
+  const { settings } = useStoreSettings();
+
+  const phoneLink = settings.phone ? settings.phone.replace(/[^+\d]/g, '') : '+919876543210';
+  const emailLink = settings.email || 'contact@bajajkaryan.com';
+  const fullAddress = `${settings.address || 'Shop No. 14, Main Market, Near Clock Tower'}, ${settings.city || 'Firozpur'}, ${settings.state || 'Punjab'} - ${settings.pincode || '152002'}`;
+
   return (
     <footer className="bg-[#2a0610] text-rose-100/90 pt-12 pb-20 md:pb-12 border-t border-rose-950">
       {/* Trust Badges */}
@@ -24,7 +33,9 @@ export function Footer() {
             </div>
             <div>
               <h4 className="font-semibold text-white">Doorstep Delivery</h4>
-              <p className="text-xs text-rose-300">Fast local delivery across Amritsar</p>
+              <p className="text-xs text-rose-300">
+                {settings.delivery_info || `Fast local delivery across ${settings.city || 'Firozpur'}`}
+              </p>
             </div>
           </div>
 
@@ -41,18 +52,19 @@ export function Footer() {
       </div>
 
       {/* Main Footer Links & Info */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {/* Brand column */}
-        <div className="md:col-span-1 space-y-3">
+        <div className="space-y-3">
           <h3 className="font-extrabold text-xl text-white font-serif tracking-wider uppercase">
-            BAJAJ KARYAN STORE
+            {settings.store_name || 'BAJAJ KARYAN STORE'}
           </h3>
           <p className="text-sm text-rose-200/80 leading-relaxed">
-            Your trusted neighborhood confectionery and grocery destination. Fresh snacks, sweets, bakery, and premium kiryana essentials.
+            {settings.footer_text ||
+              'Your trusted neighborhood confectionery and grocery destination. Fresh snacks, sweets, bakery, and premium kiryana essentials.'}
           </p>
           <div className="pt-2">
             <span className="inline-block bg-rose-900/60 text-pink-300 text-xs px-3 py-1 rounded-full border border-rose-800">
-              Serving Amritsar Since 1998
+              Serving {settings.city || 'Firozpur'} Since 1998
             </span>
           </div>
         </div>
@@ -72,58 +84,79 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/account/orders" className="hover:text-pink-300 transition">
-                Track My Orders
+              <Link href="/about" className="hover:text-pink-300 transition">
+                About Our Store
               </Link>
             </li>
             <li>
-              <Link href="/auth/login" className="hover:text-pink-300 transition">
-                Customer Login
+              <Link href="/contact" className="hover:text-pink-300 transition">
+                Contact & Inquiries
+              </Link>
+            </li>
+            <li>
+              <Link href="/account/orders" className="hover:text-pink-300 transition">
+                Track My Orders
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Opening Hours */}
+        {/* Customer Policies */}
         <div>
-          <h4 className="font-semibold text-white mb-3 text-sm uppercase tracking-wider">Store Timings</h4>
-          <div className="space-y-2 text-sm text-rose-200/90">
-            <div className="flex items-start gap-2">
-              <Clock className="w-4 h-4 text-pink-400 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-white">Monday – Saturday</p>
-                <p className="text-xs text-rose-300">8:00 AM – 9:30 PM</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2 pt-2">
-              <Clock className="w-4 h-4 text-pink-400 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-white">Sunday</p>
-                <p className="text-xs text-rose-300">9:00 AM – 7:00 PM</p>
-              </div>
-            </div>
-          </div>
+          <h4 className="font-semibold text-white mb-3 text-sm uppercase tracking-wider">Policies & Trust</h4>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/privacy-policy" className="hover:text-pink-300 transition">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/refund-policy" className="hover:text-pink-300 transition">
+                Refund & Return Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/price-change-policy" className="hover:text-pink-300 transition">
+                Price Change Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/auth/login" className="hover:text-pink-300 transition">
+                Customer Account Login
+              </Link>
+            </li>
+          </ul>
         </div>
 
-        {/* Store Contact */}
+        {/* Store Contact & Timings */}
         <div>
           <h4 className="font-semibold text-white mb-3 text-sm uppercase tracking-wider">Store Contact</h4>
           <div className="space-y-2.5 text-sm">
             <div className="flex items-start gap-2">
               <MapPin className="w-4 h-4 text-pink-400 mt-0.5 shrink-0" />
-              <span className="text-xs sm:text-sm">Shop No. 14, Main Market, Near Clock Tower, Amritsar, Punjab 143001</span>
+              <span className="text-xs sm:text-sm leading-relaxed">{fullAddress}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-pink-400 shrink-0" />
-              <a href="tel:+919876543210" className="hover:text-pink-300 text-xs sm:text-sm">
-                +91 98765 43210
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-pink-400 shrink-0" />
-              <a href="mailto:contact@bajajkaryan.com" className="hover:text-pink-300 text-xs sm:text-sm">
-                contact@bajajkaryan.com
-              </a>
+            {settings.phone && (
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-pink-400 shrink-0" />
+                <a href={`tel:${phoneLink}`} className="hover:text-pink-300 text-xs sm:text-sm">
+                  {settings.phone}
+                </a>
+              </div>
+            )}
+            {settings.email && (
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-pink-400 shrink-0" />
+                <a href={`mailto:${emailLink}`} className="hover:text-pink-300 text-xs sm:text-sm">
+                  {settings.email}
+                </a>
+              </div>
+            )}
+            <div className="flex items-start gap-2 pt-1 border-t border-rose-900/30">
+              <Clock className="w-4 h-4 text-pink-400 mt-0.5 shrink-0" />
+              <span className="text-xs text-rose-300 whitespace-pre-line">
+                {settings.opening_hours || 'Mon - Sat: 8:00 AM - 9:30 PM\nSun: 9:00 AM - 7:00 PM'}
+              </span>
             </div>
           </div>
         </div>
@@ -131,8 +164,20 @@ export function Footer() {
 
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 mt-6 border-t border-rose-900/30 flex flex-col sm:flex-row justify-between items-center text-xs text-rose-300/80 gap-3">
-        <p>© {new Date().getFullYear()} Bajaj Karyan Store. All rights reserved.</p>
-        <div className="flex items-center gap-4">
+        <p>© {new Date().getFullYear()} {settings.store_name || 'Bajaj Karyan Store'}. All rights reserved.</p>
+        <div className="flex flex-wrap items-center gap-4">
+          <Link href="/privacy-policy" className="hover:text-white transition">
+            Privacy Policy
+          </Link>
+          <span>•</span>
+          <Link href="/refund-policy" className="hover:text-white transition">
+            Refunds & Returns
+          </Link>
+          <span>•</span>
+          <Link href="/price-change-policy" className="hover:text-white transition">
+            Price Change Policy
+          </Link>
+          <span>•</span>
           <Link href="/admin" className="text-rose-400 hover:text-white transition">
             Store Administration
           </Link>

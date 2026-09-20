@@ -9,7 +9,7 @@ export default async function AdminInventoryPage() {
   ]);
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 w-full">
       <div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-[#590d22] font-serif">
           Inventory & Stock Levels

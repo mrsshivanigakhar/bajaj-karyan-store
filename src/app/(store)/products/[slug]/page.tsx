@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProductBySlug, getProducts } from '@/services/store-service';
+import { getProductBySlug, getRelatedProducts } from '@/services/store-service';
 import { formatCurrency, formatUnit } from '@/lib/utils';
-import { ProductGrid } from '@/components/products/ProductGrid';
+import { RelatedProductsCarousel } from '@/components/products/RelatedProductsCarousel';
 import { ArrowLeft, CheckCircle2, Info, Package, Truck, ShieldCheck } from 'lucide-react';
 import { ProductDetailClient } from './ProductDetailClient';
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 
   return {
     title: `${product.name} — Bajaj Karyan Store`,
-    description: product.description || `Order ${product.name} at Bajaj Karyan Store Amritsar.`,
+    description: product.description || `Order ${product.name} at Bajaj Karyan Store Firozpur.`,
     openGraph: {
       title: `${product.name} | Bajaj Karyan Store`,
       description: product.description || `Order ${product.name} from Bajaj Karyan Store.`,
@@ -40,12 +40,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     notFound();
   }
 
-  const relatedProducts = await getProducts({
-    categorySlug: product.category?.slug,
-    limit: 4,
-  });
-
-  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 4);
+  const relatedProducts = await getRelatedProducts(
+    product.id,
+    product.category?.slug,
+    24
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
@@ -83,6 +82,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 src={product.image_url}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/categories/staples-grocery.jpg';
+                }}
               />
             ) : (
               <Package className="w-20 h-20 text-rose-300" />
@@ -154,7 +157,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <div className="pt-4 border-t border-rose-100 grid grid-cols-2 gap-4 text-xs text-gray-600">
             <div className="flex items-center gap-2">
               <Truck className="w-4 h-4 text-[#800f2f]" />
-              <span>Doorstep Delivery in Amritsar</span>
+              <span>Doorstep Delivery in Firozpur</span>
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#800f2f]" />
@@ -164,15 +167,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
       </div>
 
-      {/* Related Products */}
-      {filteredRelated.length > 0 && (
-        <div className="space-y-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-serif">
-            Similar Items You May Like
-          </h2>
-          <ProductGrid products={filteredRelated} />
-        </div>
-      )}
+      {/* Related Products Horizontal Carousel (6 visible on desktop) */}
+      <RelatedProductsCarousel
+        products={relatedProducts}
+        title="Related Products You May Like"
+        subtitle={`Discover more ${product.category?.name || 'store'} essentials and popular picks.`}
+      />
     </div>
   );
 }

@@ -5,6 +5,13 @@ import { requireAdmin } from '@/lib/auth/admin';
 import { productSchema } from '@/lib/validations';
 import { revalidatePath } from 'next/cache';
 
+function formatZodError(err: any): string {
+  if (err?.issues && Array.isArray(err.issues)) {
+    return err.issues.map((i: any) => i.message).join(', ');
+  }
+  return err?.message || 'An unexpected error occurred';
+}
+
 export async function createProductAction(formData: any) {
   try {
     await requireAdmin();
@@ -30,7 +37,7 @@ export async function createProductAction(formData: any) {
     revalidatePath('/shop');
     return { success: true, data };
   } catch (err: any) {
-    return { success: false, error: err?.message || 'Failed to create product' };
+    return { success: false, error: formatZodError(err) };
   }
 }
 
@@ -59,7 +66,7 @@ export async function updateProductAction(id: string, formData: any) {
     revalidatePath('/shop');
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err?.message || 'Failed to update product' };
+    return { success: false, error: formatZodError(err) };
   }
 }
 

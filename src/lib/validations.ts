@@ -30,9 +30,18 @@ export const checkoutSchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(2, 'Product name is required'),
   slug: z.string().min(2, 'Slug is required'),
-  category_id: z.string().uuid().nullable().optional(),
+  category_id: z
+    .string()
+    .regex(
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
+      'Invalid Category ID'
+    )
+    .or(z.literal(''))
+    .nullable()
+    .optional()
+    .transform((val) => (val === '' || val === undefined ? null : val)),
   description: z.string().optional().nullable(),
-  image_url: z.string().url().optional().nullable().or(z.literal('')),
+  image_url: z.string().optional().nullable().or(z.literal('')),
   price: z.number().nullable().optional(),
   sale_price: z.number().nullable().optional(),
   unit_type: z.string().min(1, 'Unit type is required'),
@@ -48,7 +57,7 @@ export const categorySchema = z.object({
   name: z.string().min(2, 'Category name is required'),
   slug: z.string().min(2, 'Slug is required'),
   description: z.string().optional().nullable(),
-  image_url: z.string().url().optional().nullable().or(z.literal('')),
+  image_url: z.string().optional().nullable().or(z.literal('')),
   sort_order: z.number().default(0),
   is_active: z.boolean().default(true),
 });

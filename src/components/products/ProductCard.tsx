@@ -7,6 +7,7 @@ import { ShoppingBag, Check, Plus, Minus, Info } from 'lucide-react';
 import { Product } from '@/types/database';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 import { useShoppingList } from '@/context/shopping-list-context';
+import { FavoriteButton } from '@/components/products/FavoriteButton';
 
 interface ProductCardProps {
   product: Product;
@@ -56,6 +57,10 @@ export function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/images/categories/staples-grocery.jpg';
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-rose-300">
@@ -63,6 +68,11 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
         </Link>
+
+        {/* Favorite Heart Button */}
+        <div className="absolute top-2.5 right-2.5 z-10">
+          <FavoriteButton product={product} size="sm" />
+        </div>
 
         {/* Featured / Availability Badge */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1">

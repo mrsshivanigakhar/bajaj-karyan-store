@@ -1,9 +1,9 @@
-import React from 'react';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
-import { StatsCard } from '@/components/admin/StatsCard';
-import { OrderStatusBadge } from '@/components/admin/OrderStatusBadge';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { StatsCard } from "@/components/admin/StatsCard";
+import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import {
   ShoppingBag,
   Clock,
@@ -14,8 +14,9 @@ import {
   Truck,
   TrendingUp,
   AlertTriangle,
-} from 'lucide-react';
-import { fallbackProducts } from '@/lib/mock-data';
+  FileBarChart,
+} from "lucide-react";
+import { fallbackProducts } from "@/lib/mock-data";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
@@ -26,25 +27,26 @@ export default async function AdminDashboardPage() {
 
   try {
     const { data: dbOrders } = await supabase
-      .from('orders')
-      .select('*, order_items(*)')
-      .order('created_at', { ascending: false });
+      .from("orders")
+      .select("*, order_items(*)")
+      .order("created_at", { ascending: false });
 
     if (dbOrders) {
       orders = dbOrders;
     }
 
     const { count: customerCount } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true });
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "customer");
     if (customerCount !== null) {
       totalCustomersCount = customerCount;
     }
 
     const { count: prodCount } = await supabase
-      .from('products')
-      .select('*', { count: 'exact', head: true })
-      .eq('is_active', true);
+      .from("products")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true);
     if (prodCount !== null) {
       activeProductsCount = prodCount;
     }
@@ -53,26 +55,40 @@ export default async function AdminDashboardPage() {
   }
 
   // Calculate stats
-  const todayDateStr = new Date().toISOString().split('T')[0];
-  const todayOrders = orders.filter((o) => o.created_at.startsWith(todayDateStr));
-  const pendingOrders = orders.filter((o) => o.status === 'pending');
-  const confirmedOrders = orders.filter((o) => o.status === 'confirmed');
-  const preparingOrders = orders.filter((o) => o.status === 'preparing');
-  const deliveringOrders = orders.filter((o) => o.status === 'out_for_delivery');
-  const deliveredOrders = orders.filter((o) => o.status === 'delivered');
+  const todayDateStr = new Date().toISOString().split("T")[0];
+  const todayOrders = orders.filter((o) =>
+    o.created_at.startsWith(todayDateStr),
+  );
+  const pendingOrders = orders.filter((o) => o.status === "pending");
+  const confirmedOrders = orders.filter((o) => o.status === "confirmed");
+  const preparingOrders = orders.filter((o) => o.status === "preparing");
+  const deliveringOrders = orders.filter(
+    (o) => o.status === "out_for_delivery",
+  );
+  const deliveredOrders = orders.filter((o) => o.status === "delivered");
 
   const recentOrders = orders.slice(0, 6);
 
   return (
     <div className="space-y-8">
-      {/* Page Title */}
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-[#590d22] font-serif">
-          Store Overview
-        </h2>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1">
-          Real-time order tracking, fulfillment pipeline, and catalog metrics.
-        </p>
+      {/* Page Title & Reports CTA */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#590d22] font-serif">
+            Store Overview
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Real-time order tracking, fulfillment pipeline, and catalog metrics.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/reports"
+          className="inline-flex items-center gap-2 bg-white hover:bg-rose-50 text-[#800f2f] border border-rose-200 px-4 py-2.5 rounded-xl font-bold text-xs shadow-2xs transition self-start sm:self-auto"
+        >
+          <FileBarChart className="w-4 h-4 text-rose-600" />
+          <span>Download Reports (PDF / Excel)</span>
+        </Link>
       </div>
 
       {/* KPI Cards Grid */}
@@ -103,7 +119,7 @@ export default async function AdminDashboardPage() {
 
         <StatsCard
           title="Total Customers"
-          value={totalCustomersCount > 0 ? totalCustomersCount : 'Active'}
+          value={totalCustomersCount > 0 ? totalCustomersCount : "Active"}
           subtitle="Registered accounts"
           icon={Users}
           color="pink"
@@ -195,8 +211,12 @@ export default async function AdminDashboardPage() {
       <div className="bg-white rounded-3xl border border-rose-100 shadow-xs overflow-hidden">
         <div className="p-6 border-b border-rose-100 flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-gray-900 text-lg">Recent Customer Orders</h3>
-            <p className="text-xs text-gray-500">Latest orders awaiting action or fulfillment</p>
+            <h3 className="font-bold text-gray-900 text-lg">
+              Recent Customer Orders
+            </h3>
+            <p className="text-xs text-gray-500">
+              Latest orders awaiting action or fulfillment
+            </p>
           </div>
           <Link
             href="/admin/orders"
@@ -210,7 +230,9 @@ export default async function AdminDashboardPage() {
         {recentOrders.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
             <ShoppingBag className="w-12 h-12 text-rose-300 mx-auto mb-3" />
-            <p className="font-bold text-gray-800 text-sm">No orders received yet</p>
+            <p className="font-bold text-gray-800 text-sm">
+              No orders received yet
+            </p>
             <p className="text-xs text-gray-400 mt-1">
               New customer orders submitted online will appear here immediately.
             </p>
@@ -236,14 +258,20 @@ export default async function AdminDashboardPage() {
                       {order.order_number}
                     </td>
                     <td className="py-3.5 px-6">
-                      <span className="font-bold text-gray-900 block">{order.customer_name}</span>
-                      <span className="text-xs text-gray-500">{order.customer_phone}</span>
+                      <span className="font-bold text-gray-900 block">
+                        {order.customer_name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {order.customer_phone}
+                      </span>
                     </td>
                     <td className="py-3.5 px-6 text-gray-600">
                       {order.order_items?.length || 0} items
                     </td>
                     <td className="py-3.5 px-6 font-bold text-[#590d22]">
-                      {formatCurrency(order.final_total || order.estimated_total)}
+                      {formatCurrency(
+                        order.final_total || order.estimated_total,
+                      )}
                     </td>
                     <td className="py-3.5 px-6">
                       <OrderStatusBadge status={order.status} />

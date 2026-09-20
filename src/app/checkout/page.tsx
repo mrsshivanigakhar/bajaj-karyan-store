@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useShoppingList } from '@/context/shopping-list-context';
+import { useStoreSettings } from '@/context/store-settings-context';
 import { createOrderAction } from '@/actions/orders';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -24,6 +25,7 @@ import {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, estimatedSubtotal, hasPriceOnRequestItems, clearList } = useShoppingList();
+  const { settings } = useStoreSettings();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -31,9 +33,9 @@ export default function CheckoutPage() {
     email: '',
     deliveryAddress: '',
     landmark: '',
-    city: 'Amritsar',
-    state: 'Punjab',
-    pincode: '143001',
+    city: settings.city || 'Firozpur',
+    state: settings.state || 'Punjab',
+    pincode: settings.pincode || '152002',
     customerNotes: '',
   });
 
@@ -79,7 +81,8 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const deliveryCharge = estimatedSubtotal >= 500 ? 0 : 30;
+  const defaultDelivery = settings.default_delivery_charge !== undefined ? settings.default_delivery_charge : 30;
+  const deliveryCharge = estimatedSubtotal >= 500 ? 0 : defaultDelivery;
   const grandTotal = estimatedSubtotal + deliveryCharge;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -345,7 +348,7 @@ export default function CheckoutPage() {
                   <div>
                     <span className="font-bold block">Market Rate Notice:</span>
                     <span>
-                      Some items do not have listed prices. Final price will be confirmed by Bajaj Karyan Store before delivery.
+                      Some items do not have listed prices. Final price will be confirmed by {settings.store_name || 'Bajaj Karyan Store'} before delivery.
                     </span>
                   </div>
                 </div>

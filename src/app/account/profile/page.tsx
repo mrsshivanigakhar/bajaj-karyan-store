@@ -41,9 +41,9 @@ export default function ProfilePage() {
           email: user.email,
           role: 'customer',
           address: '',
-          city: 'Amritsar',
+          city: 'Firozpur',
           state: 'Punjab',
-          pincode: '143001',
+          pincode: '152002',
         });
       }
       setLoading(false);
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="city"
-                  value={profile?.city || 'Amritsar'}
+                  value={profile?.city || 'Firozpur'}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />

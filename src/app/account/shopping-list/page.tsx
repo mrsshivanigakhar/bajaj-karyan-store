@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useShoppingList } from '@/context/shopping-list-context';
+import { useStoreSettings } from '@/context/store-settings-context';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 import { ShoppingBag, ArrowRight, Trash2, Plus, Minus, AlertCircle, Store } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
@@ -19,6 +20,7 @@ export default function ShoppingListPage() {
     estimatedSubtotal,
     hasPriceOnRequestItems,
   } = useShoppingList();
+  const { settings } = useStoreSettings();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -160,7 +162,7 @@ export default function ShoppingListPage() {
                   <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800">
                     <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
                     <span>
-                      Items with unknown prices will be calculated by the store upon confirmation.
+                      Items with unknown prices will be calculated by {settings.store_name || 'the store'} upon confirmation.
                     </span>
                   </div>
                 )}

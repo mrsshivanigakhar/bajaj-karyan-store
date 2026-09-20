@@ -48,6 +48,10 @@ export interface Category {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  parent_id?: string | null;
+  parent_slug?: string | null;
+  parent?: Category | null;
+  subcategories?: Category[];
 }
 
 export interface Product {

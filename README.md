@@ -1,6 +1,6 @@
 # Bajaj Karyan Store — Full-Stack Confectionery & Grocery Ordering Platform
 
-A modern, production-ready full-stack web application built for **Bajaj Karyan Store** (Amritsar, Punjab). Built with Next.js (App Router), TypeScript, Tailwind CSS, and Supabase.
+A modern, production-ready full-stack web application built for **Bajaj Karyan Store** (Firozpur, Punjab). Built with Next.js (App Router), TypeScript, Tailwind CSS, and Supabase.
 
 ---
 

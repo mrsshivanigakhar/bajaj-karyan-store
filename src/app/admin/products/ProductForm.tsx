@@ -6,6 +6,7 @@ import { Category, Product, UnitType } from '@/types/database';
 import { createProductAction, updateProductAction } from '@/actions/products';
 import { ArrowLeft, Save, AlertCircle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 
 interface ProductFormProps {
   categories: Category[];
@@ -193,12 +194,25 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
               onChange={(e) => setFormData((prev) => ({ ...prev, category_id: e.target.value }))}
               className="w-full text-sm p-3 rounded-xl border border-rose-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
             >
-              <option value="">Select Category...</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              <option value="">Select Category / Sub-Category...</option>
+              {(() => {
+                const mainCats = categories.filter((c) => !c.slug.includes('--'));
+                const subCats = categories.filter((c) => c.slug.includes('--'));
+
+                return mainCats.map((main) => {
+                  const children = subCats.filter((s) => s.slug.startsWith(`${main.slug}--`));
+                  return (
+                    <optgroup key={main.id} label={`📁 ${main.name}`}>
+                      <option value={main.id}>📌 {main.name} (Main Category)</option>
+                      {children.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          &nbsp;&nbsp;&nbsp;↳ {sub.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                });
+              })()}
             </select>
           </div>
 
@@ -308,39 +322,34 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
           </div>
         </div>
 
-        {/* Stock and Image */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-              Stock Quantity *
-            </label>
-            <input
-              type="number"
-              step="0.1"
-              required
-              value={formData.stock_quantity}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  stock_quantity: parseFloat(e.target.value) || 0,
-                }))
-              }
-              className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800 font-bold"
-            />
-          </div>
+        <div>
+          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+            Stock Quantity *
+          </label>
+          <input
+            type="number"
+            step="0.1"
+            required
+            value={formData.stock_quantity}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                stock_quantity: parseFloat(e.target.value) || 0,
+              }))
+            }
+            className="w-full sm:w-1/2 text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800 font-bold"
+          />
+        </div>
 
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-              Product Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData((prev) => ({ ...prev, image_url: e.target.value }))}
-              placeholder="https://..."
-              className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
-            />
-          </div>
+        {/* Product Image Upload & Storage */}
+        <div className="pt-2 border-t border-rose-100">
+          <ImageUpload
+            label="Product Image"
+            folder="products"
+            value={formData.image_url}
+            onChange={(url) => setFormData((prev) => ({ ...prev, image_url: url }))}
+            description="Upload a photo from your computer to store it in Supabase Storage, or enter an image URL."
+          />
         </div>
 
         <div>

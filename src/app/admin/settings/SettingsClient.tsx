@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { StoreSettings } from '@/types/database';
 import { updateStoreSettingsAction } from '@/actions/settings';
+import { useStoreSettings } from '@/context/store-settings-context';
 import { Save, CheckCircle2, AlertCircle, Store, Truck, Tag } from 'lucide-react';
 
 export function SettingsClient({
@@ -10,6 +11,7 @@ export function SettingsClient({
 }: {
   initialSettings: StoreSettings;
 }) {
+  const { refreshSettings } = useStoreSettings();
   const [form, setForm] = useState({
     store_name: initialSettings.store_name,
     phone: initialSettings.phone || '',
@@ -50,6 +52,7 @@ export function SettingsClient({
       const res = await updateStoreSettingsAction(initialSettings.id, form);
       if (res.success) {
         setFeedback({ type: 'success', text: 'Store settings updated successfully!' });
+        await refreshSettings();
       } else {
         setFeedback({ type: 'error', text: res.error || 'Failed to update settings.' });
       }

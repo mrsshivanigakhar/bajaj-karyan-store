@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { ShoppingBag, ArrowRight, CheckCircle, Clock, ShieldCheck, HeartHandshake, Sparkles, Store } from 'lucide-react';
 import { getCategories, getProducts, getStoreSettings } from '@/services/store-service';
 import { ProductGrid } from '@/components/products/ProductGrid';
+import { HeroCarousel } from '@/components/home/HeroCarousel';
+import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 
 export default async function HomePage() {
   const [categories, featuredProducts, storeSettings] = await Promise.all([
@@ -13,89 +15,8 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-12 sm:gap-16 pb-12">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-bordeaux text-white py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-        {/* Decorative circle accents */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-900/60 border border-pink-400/30 text-xs sm:text-sm font-medium text-pink-200">
-              <Sparkles className="w-4 h-4 text-pink-400" />
-              <span>{storeSettings.store_name} — Amritsar</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight sm:leading-tight">
-              Everything You Need, <br className="hidden sm:inline" />
-              <span className="text-pink-300">From Our Store to Your Door.</span>
-            </h1>
-
-            <p className="text-base sm:text-lg text-rose-100/90 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              Browse our confectionery and grocery collection, build your custom shopping list with piece, packet, or weight-based items, and place your order effortlessly with offline payment.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-              <Link
-                href="/shop"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#ff4d6d] hover:bg-[#ff758f] text-white px-7 py-3.5 rounded-full font-semibold shadow-lg hover:shadow-pink-500/25 transition transform hover:-translate-y-0.5"
-              >
-                <span>Shop All Items</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/categories"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-900/60 hover:bg-rose-900 text-rose-100 px-6 py-3.5 rounded-full font-semibold border border-rose-700/80 transition"
-              >
-                <Store className="w-4 h-4 text-pink-300" />
-                <span>Explore Categories</span>
-              </Link>
-            </div>
-
-            {/* Quick highlight bar */}
-            <div className="pt-6 border-t border-rose-800/40 grid grid-cols-3 gap-2 sm:gap-4 text-center">
-              <div>
-                <span className="block text-xl sm:text-2xl font-bold text-white">500+</span>
-                <span className="text-[11px] sm:text-xs text-rose-200">Fresh Products</span>
-              </div>
-              <div>
-                <span className="block text-xl sm:text-2xl font-bold text-white">₹0 Online Fee</span>
-                <span className="text-[11px] sm:text-xs text-rose-200">Pay on Delivery</span>
-              </div>
-              <div>
-                <span className="block text-xl sm:text-2xl font-bold text-white">100%</span>
-                <span className="text-[11px] sm:text-xs text-rose-200">Quality Assured</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero visual showcase */}
-          <div className="lg:col-span-5 relative hidden lg:block">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-rose-800/40 aspect-4/3">
-              <img
-                src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
-                alt="Bajaj Karyan Store Grocery Showcase"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#590d22]/80 via-transparent to-transparent flex items-end p-6">
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-4 text-[#590d22] shadow-lg w-full flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Featured Today
-                    </p>
-                    <p className="font-bold text-sm sm:text-base text-gray-900">
-                      Handpicked Dry Fruits & Premium Biscuits
-                    </p>
-                  </div>
-                  <span className="bg-[#800f2f] text-white text-xs px-3 py-1.5 rounded-full font-medium">
-                    In Stock
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Animated Hero Banner Carousel */}
+      <HeroCarousel storeName={storeSettings.store_name || undefined} city={storeSettings.city || undefined} />
 
       {/* Categories Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -240,10 +161,10 @@ export default async function HomePage() {
               Local Heritage & Trust
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 font-serif">
-              Why Amritsar Prefers Bajaj Karyan Store
+              Why {storeSettings.city || 'Firozpur'} Prefers {storeSettings.store_name || 'Bajaj Karyan Store'}
             </h2>
             <p className="text-sm text-gray-600 leading-relaxed">
-              For over two decades, Bajaj Karyan Store has served Amritsar households with highest quality groceries, festive confectionery, and personalized neighborhood care.
+              For over two decades, {storeSettings.store_name || 'Bajaj Karyan Store'} has served {storeSettings.city || 'Firozpur'} households with highest quality groceries, festive confectionery, and personalized neighborhood care.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -280,6 +201,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Customer Testimonials Section */}
+      <TestimonialsSection />
     </div>
   );
 }

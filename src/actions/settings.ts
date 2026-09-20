@@ -20,8 +20,11 @@ export async function updateStoreSettingsAction(id: string, formData: any) {
       return { success: false, error: error.message };
     }
 
+    revalidatePath('/', 'layout');
     revalidatePath('/admin/settings');
-    revalidatePath('/');
+    revalidatePath('/checkout');
+    revalidatePath('/shop');
+    revalidatePath('/categories');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to update settings' };

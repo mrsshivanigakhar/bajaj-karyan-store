@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, AlertCircle, Edit3 } from 'lucide-react';
 import { useShoppingList } from '@/context/shopping-list-context';
+import { useStoreSettings } from '@/context/store-settings-context';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 
 export function ShoppingListDrawer() {
@@ -19,6 +20,7 @@ export function ShoppingListDrawer() {
     isDrawerOpen,
     setIsDrawerOpen,
   } = useShoppingList();
+  const { settings } = useStoreSettings();
 
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
@@ -215,7 +217,7 @@ export function ShoppingListDrawer() {
                 <div className="flex items-start gap-2 text-xs text-[#800f2f] bg-rose-100/70 p-2.5 rounded-lg border border-rose-200">
                   <AlertCircle className="w-4 h-4 text-pink-600 shrink-0 mt-0.5" />
                   <span>
-                    Some items do not have fixed prices. The final total will be confirmed by Bajaj Karyan Store before delivery.
+                    Some items do not have fixed prices. The final total will be confirmed by {settings.store_name || 'Bajaj Karyan Store'} before delivery.
                   </span>
                 </div>
               )}

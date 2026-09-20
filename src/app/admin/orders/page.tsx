@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/components/admin/OrderStatusBadge';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Search, Filter, ArrowRight, ShoppingBag, Eye, Printer } from 'lucide-react';
+import { OrdersReportToolbar } from './OrdersReportToolbar';
 
 interface AdminOrdersPageProps {
   searchParams: Promise<{
@@ -19,6 +20,9 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
 
   const supabase = await createClient();
   let orders: any[] = [];
+  let allOrders: any[] = [];
+
+  const isFiltered = currentStatus !== 'all' || Boolean(currentSearch);
 
   try {
     let query = supabase
@@ -39,6 +43,16 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
     const { data } = await query;
     if (data) {
       orders = data;
+    }
+
+    if (isFiltered) {
+      const { data: allData } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .order('created_at', { ascending: false });
+      allOrders = allData || [];
+    } else {
+      allOrders = orders;
     }
   } catch {
     // ignore
@@ -66,6 +80,14 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
           </p>
         </div>
       </div>
+
+      {/* Reports & Export Toolbar */}
+      <OrdersReportToolbar
+        filteredOrders={orders}
+        allOrders={allOrders}
+        currentStatus={currentStatus}
+        currentSearch={currentSearch}
+      />
 
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-3xl border border-rose-100 shadow-xs space-y-4">

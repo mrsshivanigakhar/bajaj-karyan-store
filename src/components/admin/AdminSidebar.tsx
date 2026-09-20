@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Store,
+  FileBarChart,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -31,6 +32,7 @@ export function AdminSidebar() {
     { label: 'Categories', href: '/admin/categories', icon: Layers },
     { label: 'Inventory', href: '/admin/inventory', icon: Boxes },
     { label: 'Customers', href: '/admin/customers', icon: Users },
+    { label: 'Reports & Export', href: '/admin/reports', icon: FileBarChart },
     { label: 'Store Settings', href: '/admin/settings', icon: Settings },
   ];
 

@@ -15,8 +15,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     address: '',
-    city: 'Amritsar',
-    pincode: '143001',
+    city: 'Firozpur',
+    pincode: '152002',
   });
 
   const [loading, setLoading] = useState(false);

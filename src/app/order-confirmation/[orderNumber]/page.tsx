@@ -7,10 +7,12 @@ import confetti from 'canvas-confetti';
 import { CheckCircle2, Clock, Phone, ArrowRight, Store, FileText } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { useStoreSettings } from '@/context/store-settings-context';
 
 export default function OrderConfirmationPage() {
   const params = useParams();
   const orderNumber = (params?.orderNumber as string) || 'BKS-2026-ORDER';
+  const { settings } = useStoreSettings();
 
   useEffect(() => {
     try {
@@ -43,7 +45,9 @@ export default function OrderConfirmationPage() {
         </h1>
 
         <p className="text-base text-gray-600 max-w-lg mb-8 leading-relaxed">
-          Thank you for shopping with <strong className="text-gray-900">Bajaj Karyan Store</strong>. Your order has been received and sent to our store desk.
+          Thank you for shopping with{' '}
+          <strong className="text-gray-900">{settings.store_name || 'Bajaj Karyan Store'}</strong>.
+          Your order has been received and sent to our store desk.
         </p>
 
         {/* Order Reference Box */}
@@ -92,13 +96,15 @@ export default function OrderConfirmationPage() {
 
           <div className="pt-4 border-t border-rose-100 flex items-center justify-between text-xs text-rose-900 bg-rose-50/60 p-3 rounded-xl">
             <span>Questions regarding this order?</span>
-            <a
-              href="tel:+919876543210"
-              className="font-bold text-[#590d22] hover:underline flex items-center gap-1"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>+91 98765 43210</span>
-            </a>
+            {settings.phone && (
+              <a
+                href={`tel:${settings.phone.replace(/[^+\d]/g, '')}`}
+                className="font-bold text-[#590d22] hover:underline flex items-center gap-1"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>{settings.phone}</span>
+              </a>
+            )}
           </div>
         </div>
 
