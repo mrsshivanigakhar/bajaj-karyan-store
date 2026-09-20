@@ -13,7 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getStoreSettings();
   const storeName = settings.store_name || "Bajaj karyana Store";
   const city = settings.city || "Firozpur";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bajajkaryan.com";
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://bajaj-karyan-store.vercel.app");
 
   return {
     metadataBase: new URL(siteUrl),
