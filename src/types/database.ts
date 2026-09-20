@@ -71,6 +71,7 @@ export interface Product {
   is_available: boolean;
   is_featured: boolean;
   is_active: boolean;
+  dietary_preference?: 'veg' | 'non-veg' | 'egg' | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
-# Build a Full-Stack Confectionery & Grocery Ordering Platform — Bajaj Karyan Store
+# Build a Full-Stack Confectionery & Grocery Ordering Platform — Bajaj karyana Store
 
-Create a modern, production-ready full-stack web application named **“Bajaj Karyan Store”** for a confectionery/kiryana store.
+Create a modern, production-ready full-stack web application named **“Bajaj karyana Store”** for a confectionery/kiryana store.
 
 The application must have:
 
@@ -25,6 +25,7 @@ The first version must **NOT include any payment gateway**. Orders are placed as
 Use the following technology stack:
 
 ### Frontend
+
 - Next.js latest stable version
 - App Router
 - TypeScript
@@ -37,6 +38,7 @@ Use the following technology stack:
 - Client Components only where interactivity is required
 
 ### Backend
+
 Use **Supabase** for:
 
 - PostgreSQL database
@@ -46,15 +48,18 @@ Use **Supabase** for:
 - Database functions/triggers where appropriate
 
 ### PDF
+
 Use a suitable browser/server-side PDF generation solution.
 
 Preferred options:
+
 - `@react-pdf/renderer`
 - or another reliable PDF generation library compatible with Next.js
 
 Admin must be able to generate and print/download an order PDF.
 
 ### Deployment
+
 Application should be designed for deployment on:
 
 - Vercel
@@ -68,7 +73,7 @@ The architecture should also be compatible with other Node.js hosting platforms.
 
 Store name:
 
-**BAJAJ KARYAN STORE**
+**BAJAJ karyana STORE**
 
 Use a premium but friendly confectionery/grocery visual identity.
 
@@ -92,6 +97,7 @@ Use these colors consistently throughout the application.
 Suggested usage:
 
 ### Primary
+
 `#590d22`
 
 For:
@@ -103,6 +109,7 @@ For:
 - Footer
 
 ### Secondary
+
 `#800f2f`
 `#a4133c`
 `#c9184a`
@@ -115,6 +122,7 @@ For:
 - Important UI states
 
 ### Accent
+
 `#ff4d6d`
 `#ff758f`
 
@@ -126,6 +134,7 @@ For:
 - Hover states
 
 ### Soft backgrounds
+
 `#ff8fa3`
 `#ffb3c1`
 `#ffccd5`
@@ -148,7 +157,7 @@ Avoid making the entire application overwhelmingly pink. Maintain strong contras
 Create the application with the following high-level sections:
 
 ```text
-Bajaj Karyan Store
+Bajaj karyana Store
 │
 ├── Public Website
 │   ├── Home
@@ -190,6 +199,7 @@ Implement authentication using Supabase Auth.
 Support:
 
 ### Customer
+
 - Sign up
 - Login
 - Logout
@@ -198,6 +208,7 @@ Support:
 - Profile management
 
 ### Admin
+
 Admin accounts must have a separate authorization mechanism.
 
 Do NOT simply rely on frontend route hiding.
@@ -517,7 +528,7 @@ Estimated Total
 
 But clearly explain:
 
-**“Final price will be confirmed by Bajaj Karyan Store.”**
+**“Final price will be confirmed by Bajaj karyana Store.”**
 
 Especially when some products have no listed price.
 
@@ -846,7 +857,7 @@ Order details page should contain:
 ### Header
 
 ```text
-BAJAJ KARYAN STORE
+BAJAJ karyana STORE
 Order #BKS-2026-000001
 ```
 
@@ -926,7 +937,7 @@ Generate a clean professional printable order document.
 PDF should include:
 
 ```text
-BAJAJ KARYAN STORE
+BAJAJ karyana STORE
 Address
 Phone
 Email
@@ -966,7 +977,7 @@ Payment Status
 
 --------------------------------------------
 
-Thank you for shopping with Bajaj Karyan Store
+Thank you for shopping with Bajaj karyana Store
 ```
 
 PDF should be printer-friendly:
@@ -993,7 +1004,7 @@ Sections:
 
 Logo:
 
-**BAJAJ KARYAN STORE**
+**BAJAJ karyana STORE**
 
 Navigation:
 
@@ -1165,12 +1176,19 @@ The application must be fully responsive.
 Prioritize:
 
 ### Mobile
+
 375px+
+
 ### Tablet
+
 768px+
+
 ### Desktop
+
 1024px+
+
 ### Large desktop
+
 1440px+
 
 The shopping experience should feel particularly good on mobile because customers may use phones to place store orders.
@@ -1390,7 +1408,7 @@ Create a reusable authorization utility.
 For example:
 
 ```ts
-requireAdmin()
+requireAdmin();
 ```
 
 Use it for:
@@ -1423,7 +1441,7 @@ Recommended route structure:
     shop/
     categories/
     products/[slug]/
-  
+
   /auth
     /login
     /register
@@ -1521,7 +1539,7 @@ Footer Text
 
 The store name should default to:
 
-**Bajaj Karyan Store**
+**Bajaj karyana Store**
 
 but should not be hard-coded everywhere.
 
@@ -1665,7 +1683,7 @@ After placing an order, show a success page:
 ```text
 Order Placed Successfully!
 
-Thank you for shopping with Bajaj Karyan Store.
+Thank you for shopping with Bajaj karyana Store.
 
 Order Number:
 BKS-2026-000123
@@ -1930,7 +1948,7 @@ Generate or define strongly typed Supabase database types.
 Avoid:
 
 ```ts
-any
+any;
 ```
 
 unless absolutely necessary.
@@ -1965,9 +1983,11 @@ Profile
 Admin interface should have:
 
 ### Desktop
+
 Fixed left sidebar.
 
 ### Mobile
+
 Collapsible sidebar/drawer.
 
 Sidebar:
@@ -2060,33 +2080,43 @@ Print
 Implement these rules carefully:
 
 ### Rule 1
+
 Inactive products cannot be added to new orders.
 
 ### Rule 2
+
 Out-of-stock products cannot be ordered unless admin explicitly permits ordering.
 
 ### Rule 3
+
 Customers cannot alter prices.
 
 ### Rule 4
+
 Customers can order products without listed prices.
 
 ### Rule 5
+
 Admin can confirm/change item prices before final delivery.
 
 ### Rule 6
+
 Historical order details must remain unchanged even when product information changes later.
 
 ### Rule 7
+
 Customers can see only their own orders.
 
 ### Rule 8
+
 Only admins can manage products, categories, inventory, and all orders.
 
 ### Rule 9
+
 The server must calculate authoritative totals.
 
 ### Rule 10
+
 Order creation must be transactional where practical.
 
 ---
@@ -2307,48 +2337,63 @@ Do not create visual placeholders for functionality that should actually work.
 Build in this order:
 
 ### Phase 1
+
 Project setup and theme
 
 ### Phase 2
+
 Supabase schema and RLS
 
 ### Phase 3
+
 Authentication and profiles
 
 ### Phase 4
+
 Public storefront
 
 ### Phase 5
+
 Products and categories
 
 ### Phase 6
+
 Shopping list
 
 ### Phase 7
+
 Checkout and order creation
 
 ### Phase 8
+
 Customer dashboard
 
 ### Phase 9
+
 Admin dashboard
 
 ### Phase 10
+
 Admin product/category/inventory management
 
 ### Phase 11
+
 Admin order management
 
 ### Phase 12
+
 Order PDF
 
 ### Phase 13
+
 Responsive optimization
 
 ### Phase 14
+
 Security and validation review
 
 ### Phase 15
+
 Final testing and cleanup
 
 ---
@@ -2358,6 +2403,7 @@ Final testing and cleanup
 Test at minimum:
 
 ### Authentication
+
 - Register
 - Login
 - Logout
@@ -2365,6 +2411,7 @@ Test at minimum:
 - Unauthorized access
 
 ### Products
+
 - Create
 - Update
 - Delete/deactivate
@@ -2372,6 +2419,7 @@ Test at minimum:
 - Unit support
 
 ### Shopping List
+
 - Add
 - Remove
 - Update quantity
@@ -2379,6 +2427,7 @@ Test at minimum:
 - Notes
 
 ### Orders
+
 - Create
 - View
 - Status changes
@@ -2386,12 +2435,14 @@ Test at minimum:
 - Historical snapshots
 
 ### Admin
+
 - Product management
 - Customer management
 - Order management
 - PDF generation
 
 ### Security
+
 - Customer cannot read another customer's order
 - Customer cannot access admin
 - Customer cannot alter prices
@@ -2420,7 +2471,7 @@ Customer creates shopping list
         ↓
 Customer submits order
         ↓
-Bajaj Karyan Store receives order
+Bajaj karyana Store receives order
         ↓
 Admin reviews items
         ↓

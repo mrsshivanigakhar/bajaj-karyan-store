@@ -1,15 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useShoppingList } from '@/context/shopping-list-context';
-import { useStoreSettings } from '@/context/store-settings-context';
-import { createOrderAction } from '@/actions/orders';
-import { formatCurrency, formatUnit } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useShoppingList } from "@/context/shopping-list-context";
+import { useStoreSettings } from "@/context/store-settings-context";
+import { createOrderAction } from "@/actions/orders";
+import { formatCurrency, formatUnit } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import {
+  isDeliverableFirozpurPincode,
+  FIROZPUR_DELIVERY_PINCODES,
+} from "@/lib/validations";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import {
   ShoppingBag,
   ArrowLeft,
@@ -20,23 +24,24 @@ import {
   Phone,
   MapPin,
   Clock,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, estimatedSubtotal, hasPriceOnRequestItems, clearList } = useShoppingList();
+  const { items, estimatedSubtotal, hasPriceOnRequestItems, clearList } =
+    useShoppingList();
   const { settings } = useStoreSettings();
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    deliveryAddress: '',
-    landmark: '',
-    city: settings.city || 'Firozpur',
-    state: settings.state || 'Punjab',
-    pincode: settings.pincode || '152002',
-    customerNotes: '',
+    fullName: "",
+    phone: "",
+    email: "",
+    deliveryAddress: "",
+    landmark: "",
+    city: settings.city || "Firozpur",
+    state: settings.state || "Punjab",
+    pincode: settings.pincode || "152002",
+    customerNotes: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,9 +53,9 @@ export default function CheckoutPage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (user) {
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
           .single();
 
         if (profile) {
@@ -75,20 +80,32 @@ export default function CheckoutPage() {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const defaultDelivery = settings.default_delivery_charge !== undefined ? settings.default_delivery_charge : 30;
+  const defaultDelivery =
+    settings.default_delivery_charge !== undefined
+      ? settings.default_delivery_charge
+      : 30;
   const deliveryCharge = estimatedSubtotal >= 500 ? 0 : defaultDelivery;
   const grandTotal = estimatedSubtotal + deliveryCharge;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) {
-      setErrorMessage('Your shopping list is empty.');
+      setErrorMessage("Your shopping list is empty.");
+      return;
+    }
+
+    if (!isDeliverableFirozpurPincode(formData.pincode)) {
+      setErrorMessage(
+        "Delivery is currently only available within a 20km radius of Firozpur (Pincodes: 152001, 152002, 152003, 152004, 152005, 152024, 152028, 152116, 152117).",
+      );
       return;
     }
 
@@ -110,10 +127,15 @@ export default function CheckoutPage() {
         clearList();
         router.push(`/order-confirmation/${response.orderNumber}`);
       } else {
-        setErrorMessage(response.error || 'Failed to place order. Please check your information.');
+        setErrorMessage(
+          response.error ||
+            "Failed to place order. Please check your information.",
+        );
       }
     } catch (err: any) {
-      setErrorMessage(err?.message || 'Something went wrong. Please try again.');
+      setErrorMessage(
+        err?.message || "Something went wrong. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -127,9 +149,12 @@ export default function CheckoutPage() {
           <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-400 mx-auto mb-4">
             <ShoppingBag className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">No items to checkout</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            No items to checkout
+          </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Please add grocery or confectionery products to your shopping list first.
+            Please add grocery or confectionery products to your shopping list
+            first.
           </p>
           <Link
             href="/shop"
@@ -161,8 +186,28 @@ export default function CheckoutPage() {
           Order Placement & Delivery
         </h1>
         <p className="text-sm text-gray-600 mb-8">
-          Enter your delivery destination. No payment is required online; pay via Cash or UPI when the store delivers your order.
+          Enter your delivery destination. No payment is required online; pay
+          via Cash or UPI when the store delivers your order.
         </p>
+
+        {/* 20km Delivery Zone Notice */}
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-900 text-sm flex items-start gap-3">
+          <Truck className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="font-bold text-amber-950">
+              📍 Exclusive Local Delivery Zone: Firozpur & Surroundings (Within
+              20 km)
+            </p>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              We deliver fresh groceries and confectionery exclusively to
+              customers within a 20 km radius of Firozpur. Eligible pincodes:{" "}
+              <span className="font-semibold">
+                {FIROZPUR_DELIVERY_PINCODES.join(", ")}
+              </span>
+              .
+            </p>
+          </div>
+        </div>
 
         {errorMessage && (
           <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
@@ -171,7 +216,10 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+        >
           {/* Customer Details Form */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white p-6 rounded-3xl border border-rose-100 shadow-xs space-y-4">
@@ -258,15 +306,16 @@ export default function CheckoutPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    City *
+                    City (Within 20km) *
                   </label>
                   <input
                     type="text"
                     name="city"
                     required
+                    readOnly
                     value={formData.city}
-                    onChange={handleChange}
-                    className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
+                    className="w-full text-sm p-3 rounded-xl border border-rose-200 bg-rose-50/50 text-gray-800 font-medium cursor-not-allowed"
+                    title="Orders are accepted for Firozpur region within 20km"
                   />
                 </div>
 
@@ -279,10 +328,32 @@ export default function CheckoutPage() {
                     name="pincode"
                     required
                     maxLength={6}
+                    placeholder="152002"
                     value={formData.pincode}
                     onChange={handleChange}
-                    className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
+                    className={`w-full text-sm p-3 rounded-xl border focus:outline-none focus:ring-2 bg-white text-gray-800 ${
+                      formData.pincode.length === 6
+                        ? isDeliverableFirozpurPincode(formData.pincode)
+                          ? "border-emerald-300 focus:ring-emerald-500"
+                          : "border-red-300 focus:ring-red-500"
+                        : "border-rose-200 focus:ring-[#800f2f]"
+                    }`}
                   />
+                  {formData.pincode.length === 6 && (
+                    <div className="mt-1 text-[11px] font-medium flex items-center gap-1">
+                      {isDeliverableFirozpurPincode(formData.pincode) ? (
+                        <span className="text-emerald-700 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Deliverable within 20km zone
+                        </span>
+                      ) : (
+                        <span className="text-red-600 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          Outside 20km Firozpur zone
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -308,7 +379,9 @@ export default function CheckoutPage() {
                 <span>Offline / Cash / UPI on Delivery</span>
               </div>
               <p className="text-xs text-rose-900 leading-relaxed">
-                No payment gateway needed. Our store receives your list, prepares fresh items, and accepts payment at your doorstep via cash or direct QR scan.
+                No payment gateway needed. Our store receives your list,
+                prepares fresh items, and accepts payment at your doorstep via
+                cash or direct QR scan.
               </p>
             </div>
           </div>
@@ -324,18 +397,28 @@ export default function CheckoutPage() {
               {/* Items Mini-list */}
               <div className="max-h-64 overflow-y-auto space-y-3 pr-1 divide-y divide-rose-100/60">
                 {items.map((item) => (
-                  <div key={item.productId} className="pt-2.5 first:pt-0 flex justify-between gap-2 text-xs">
+                  <div
+                    key={item.productId}
+                    className="pt-2.5 first:pt-0 flex justify-between gap-2 text-xs"
+                  >
                     <div>
-                      <span className="font-semibold text-gray-900 block">{item.name}</span>
+                      <span className="font-semibold text-gray-900 block">
+                        {item.name}
+                      </span>
                       <span className="text-gray-500">
-                        {item.quantity} {item.unitType === 'kg' || item.unitType === 'gram' ? item.unitType : 'units'}
-                        {item.customerNotes ? ` • Note: ${item.customerNotes}` : ''}
+                        {item.quantity}{" "}
+                        {item.unitType === "kg" || item.unitType === "gram"
+                          ? item.unitType
+                          : "units"}
+                        {item.customerNotes
+                          ? ` • Note: ${item.customerNotes}`
+                          : ""}
                       </span>
                     </div>
                     <span className="font-bold text-gray-800 shrink-0">
                       {item.price !== null
                         ? formatCurrency(item.price * item.quantity)
-                        : 'Market Rate'}
+                        : "Market Rate"}
                     </span>
                   </div>
                 ))}
@@ -348,7 +431,10 @@ export default function CheckoutPage() {
                   <div>
                     <span className="font-bold block">Market Rate Notice:</span>
                     <span>
-                      Some items do not have listed prices. Final price will be confirmed by {settings.store_name || 'Bajaj Karyan Store'} before delivery.
+                      Some items do not have listed prices. Final price will be
+                      confirmed by{" "}
+                      {settings.store_name || "Bajaj karyana Store"} before
+                      delivery.
                     </span>
                   </div>
                 </div>
@@ -374,13 +460,18 @@ export default function CheckoutPage() {
                 </div>
                 {deliveryCharge > 0 && (
                   <p className="text-[11px] text-gray-400 italic">
-                    Add ₹{(500 - estimatedSubtotal).toFixed(0)} more for free delivery
+                    Add ₹{(500 - estimatedSubtotal).toFixed(0)} more for free
+                    delivery
                   </p>
                 )}
                 <div className="pt-2 border-t border-rose-100 flex justify-between items-baseline">
                   <div>
-                    <span className="font-bold text-gray-900 block">Estimated Total</span>
-                    <span className="text-[10px] text-gray-500">Final price confirmed by store</span>
+                    <span className="font-bold text-gray-900 block">
+                      Estimated Total
+                    </span>
+                    <span className="text-[10px] text-gray-500">
+                      Final price confirmed by store
+                    </span>
                   </div>
                   <span className="text-2xl font-black text-[#590d22]">
                     {formatCurrency(grandTotal)}
@@ -405,7 +496,8 @@ export default function CheckoutPage() {
               </button>
 
               <p className="text-center text-[11px] text-gray-400">
-                By placing this order, you agree that Bajaj Karyan Store will verify stock and deliver locally.
+                By placing this order, you agree that Bajaj karyana Store will
+                verify stock and deliver locally.
               </p>
             </div>
           </div>

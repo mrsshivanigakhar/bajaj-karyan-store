@@ -10,6 +10,7 @@ import {
 import { formatCurrency, formatDate, formatUnit } from '@/lib/utils';
 import { OrderStatusBadge, PaymentStatusBadge } from '@/components/admin/OrderStatusBadge';
 import { OrderTimeline } from '@/components/admin/OrderTimeline';
+import Link from 'next/link';
 import {
   User,
   Phone,
@@ -21,7 +22,10 @@ import {
   DollarSign,
   Save,
   ShoppingBag,
+  Download,
+  Printer,
 } from 'lucide-react';
+import { generateOrderInvoicePdf } from '@/lib/reports/order-invoice-pdf';
 
 interface AdminOrderDetailClientProps {
   initialOrder: Order;
@@ -195,6 +199,24 @@ export function AdminOrderDetailClient({
           <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge status={order.status} />
             <PaymentStatusBadge status={order.payment_status} />
+            <button
+              type="button"
+              onClick={() => generateOrderInvoicePdf(order, storeSettings)}
+              className="inline-flex items-center gap-1.5 bg-[#800f2f] hover:bg-[#590d22] text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+              title="Download PDF Invoice"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF</span>
+            </button>
+            <Link
+              href={`/admin/orders/${order.id}/print`}
+              target="_blank"
+              className="inline-flex items-center gap-1.5 bg-white hover:bg-rose-50 text-gray-700 border border-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow-2xs transition"
+              title="Print Invoice / Receipt"
+            >
+              <Printer className="w-3.5 h-3.5 text-rose-700" />
+              <span>Print</span>
+            </Link>
           </div>
         </div>
 

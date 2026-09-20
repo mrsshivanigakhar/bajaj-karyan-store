@@ -2,17 +2,13 @@
 
 import React, { useEffect, useRef } from 'react';
 
-interface Particle {
+interface Ripple {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  angle: number;
-  vRot: number;
-  type: number; // 0 to 8 for different karyana icons
-  opacity: number;
-  color: string;
+  radius: number;
+  maxRadius: number;
+  strength: number;
+  speed: number;
 }
 
 export function AnimatedKaryanaBackground() {
@@ -28,36 +24,56 @@ export function AnimatedKaryanaBackground() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Mouse coordinates & repulsion radius
+    // Mouse tracking & smooth interpolation
     const mouse = {
       x: -1000,
       y: -1000,
-      radius: 140,
-      targetRadius: 140,
+      targetX: -1000,
+      targetY: -1000,
+      isMoving: false,
     };
 
+    let moveTimeout: NodeJS.Timeout;
+
     const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+      mouse.targetX = e.clientX;
+      mouse.targetY = e.clientY;
+      mouse.isMoving = true;
+      clearTimeout(moveTimeout);
+      moveTimeout = setTimeout(() => {
+        mouse.isMoving = false;
+      }, 1500);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
+        mouse.targetX = e.touches[0].clientX;
+        mouse.targetY = e.touches[0].clientY;
+        mouse.isMoving = true;
+        clearTimeout(moveTimeout);
+        moveTimeout = setTimeout(() => {
+          mouse.isMoving = false;
+        }, 1500);
       }
     };
 
     const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
+      mouse.targetX = -1000;
+      mouse.targetY = -1000;
+      mouse.isMoving = false;
     };
 
-    const handleMouseDown = () => {
-      mouse.radius = 220; // Push further on click
-      setTimeout(() => {
-        mouse.radius = 140;
-      }, 350);
+    // Expanding shockwave ripples on click
+    const ripples: Ripple[] = [];
+    const handleMouseDown = (e: MouseEvent) => {
+      ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        radius: 0,
+        maxRadius: Math.max(width, height) * 0.7,
+        strength: 22,
+        speed: 7,
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -65,6 +81,7 @@ export function AnimatedKaryanaBackground() {
     window.addEventListener('mouseleave', handleMouseLeave);
     window.addEventListener('mousedown', handleMouseDown);
 
+    // Handle high-DPI resize
     const handleResize = () => {
       if (!canvas) return;
       width = canvas.width = window.innerWidth;
@@ -73,169 +90,36 @@ export function AnimatedKaryanaBackground() {
 
     window.addEventListener('resize', handleResize);
 
-    // Warm elegant colors matching Bordeaux & Rose theme
-    const colors = [
-      'rgba(128, 15, 47, 0.10)',   // Deep rose/bordeaux
-      'rgba(164, 19, 60, 0.09)',   // Burgundy
-      'rgba(201, 24, 74, 0.08)',   // Rose
-      'rgba(180, 83, 9, 0.09)',    // Warm amber (grains)
-      'rgba(161, 98, 7, 0.08)',    // Mustard/ghee gold
-    ];
-
-    // Determine particle count based on screen size
-    const particleCount = Math.min(Math.max(Math.floor((width * height) / 35000), 24), 48);
-    const particles: Particle[] = [];
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        size: Math.random() * 12 + 20, // 20 to 32px
-        angle: Math.random() * Math.PI * 2,
-        vRot: (Math.random() - 0.5) * 0.008,
-        type: Math.floor(Math.random() * 8),
-        opacity: Math.random() * 0.04 + 0.08, // Subtle opacity
-        color: colors[Math.floor(Math.random() * colors.length)],
-      });
-    }
-
-    // Helper functions to draw crisp karyana store icons
-    function drawIcon(c: CanvasRenderingContext2D, type: number, s: number) {
-      c.lineWidth = 1.6;
-      c.lineCap = 'round';
-      c.lineJoin = 'round';
-
-      switch (type) {
-        // 0. Shopping Bag
-        case 0: {
-          const w = s * 0.7;
-          const h = s * 0.8;
-          c.strokeRect(-w / 2, -h / 2 + 4, w, h - 4);
-          c.beginPath();
-          c.arc(0, -h / 2 + 4, w * 0.35, Math.PI, 0, false);
-          c.stroke();
-          break;
-        }
-
-        // 1. Wheat / Grain Ear (Atta / Staples)
-        case 1: {
-          c.beginPath();
-          c.moveTo(0, s * 0.45);
-          c.lineTo(0, -s * 0.45);
-          for (let y = -s * 0.3; y <= s * 0.2; y += s * 0.12) {
-            c.moveTo(0, y);
-            c.lineTo(s * 0.25, y - s * 0.1);
-            c.moveTo(0, y);
-            c.lineTo(-s * 0.25, y - s * 0.1);
-          }
-          c.stroke();
-          break;
-        }
-
-        // 2. Jar (Pure Desi Ghee / Honey / Pickles)
-        case 2: {
-          const w = s * 0.6;
-          const h = s * 0.75;
-          // Lid
-          c.strokeRect(-w * 0.4, -h / 2, w * 0.8, h * 0.15);
-          // Jar body
-          c.strokeRect(-w / 2, -h / 2 + h * 0.15, w, h * 0.85);
-          // Label line
-          c.beginPath();
-          c.moveTo(-w * 0.35, 0);
-          c.lineTo(w * 0.35, 0);
-          c.stroke();
-          break;
-        }
-
-        // 3. Apple / Fresh Fruit
-        case 3: {
-          const r = s * 0.32;
-          c.beginPath();
-          c.arc(-r * 0.4, 0, r, 0, Math.PI * 2);
-          c.arc(r * 0.4, 0, r, 0, Math.PI * 2);
-          c.stroke();
-          // Stem
-          c.beginPath();
-          c.moveTo(0, -r);
-          c.quadraticCurveTo(s * 0.15, -s * 0.4, s * 0.1, -s * 0.45);
-          c.stroke();
-          break;
-        }
-
-        // 4. Wrapped Candy / Confectionery Sweet
-        case 4: {
-          const r = s * 0.25;
-          c.beginPath();
-          c.arc(0, 0, r, 0, Math.PI * 2);
-          c.stroke();
-          // Left wrapper tail
-          c.beginPath();
-          c.moveTo(-r, 0);
-          c.lineTo(-s * 0.45, -s * 0.15);
-          c.lineTo(-s * 0.45, s * 0.15);
-          c.closePath();
-          c.stroke();
-          // Right wrapper tail
-          c.beginPath();
-          c.moveTo(r, 0);
-          c.lineTo(s * 0.45, -s * 0.15);
-          c.lineTo(s * 0.45, s * 0.15);
-          c.closePath();
-          c.stroke();
-          break;
-        }
-
-        // 5. Spice / Herbal Leaf
-        case 5: {
-          c.beginPath();
-          c.moveTo(0, -s * 0.4);
-          c.quadraticCurveTo(s * 0.35, 0, 0, s * 0.4);
-          c.quadraticCurveTo(-s * 0.35, 0, 0, -s * 0.4);
-          c.moveTo(0, -s * 0.35);
-          c.lineTo(0, s * 0.35);
-          c.stroke();
-          break;
-        }
-
-        // 6. Milk / Oil Bottle
-        case 6: {
-          const w = s * 0.5;
-          const h = s * 0.8;
-          // Neck
-          c.strokeRect(-w * 0.25, -h / 2, w * 0.5, h * 0.25);
-          // Bottle body
-          c.strokeRect(-w / 2, -h / 2 + h * 0.25, w, h * 0.75);
-          break;
-        }
-
-        // 7. Tea / Coffee Cup
-        case 7: {
-          const w = s * 0.6;
-          const h = s * 0.5;
-          // Cup body
-          c.strokeRect(-w / 2, -h / 2, w, h);
-          // Handle
-          c.beginPath();
-          c.arc(w / 2 + 3, -h / 4, h * 0.3, -Math.PI / 2, Math.PI / 2);
-          c.stroke();
-          // Saucer
-          c.beginPath();
-          c.moveTo(-w * 0.7, h / 2 + 2);
-          c.lineTo(w * 0.7, h / 2 + 2);
-          c.stroke();
-          break;
-        }
-      }
-    }
-
     let isVisible = true;
     const handleVisibilityChange = () => {
       isVisible = !document.hidden;
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Dynamic scroll-based opacity fading to keep reading-heavy sections calm and readable
+    const handleScroll = () => {
+      if (!canvas) return;
+      const scrollY = window.scrollY || 0;
+      // Vibrant at top (hero/featured), gently fades to 0.16 at 900px+
+      let scrollOpacity = 1;
+      if (scrollY <= 350) {
+        scrollOpacity = 1;
+      } else if (scrollY >= 900) {
+        scrollOpacity = 0.16;
+      } else {
+        scrollOpacity = 1 - ((scrollY - 350) / 550) * 0.84;
+      }
+      canvas.style.opacity = scrollOpacity.toFixed(2);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    // Grid configuration
+    const spacing = 32; // Distance between dots
+    const baseRadius = 1.5; // Idle dot radius
+    const mouseInfluenceRadius = 240; // Influence zone of cursor
+
+    let time = 0;
 
     function render() {
       if (!ctx) return;
@@ -244,43 +128,106 @@ export function AnimatedKaryanaBackground() {
         return;
       }
 
+      time += 0.025;
+
+      // Smooth mouse position easing
+      mouse.x += (mouse.targetX - mouse.x) * 0.12;
+      mouse.y += (mouse.targetY - mouse.y) * 0.12;
+
       ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-
-        // 1. Move particle
-        p.x += p.vx;
-        p.y += p.vy;
-        p.angle += p.vRot;
-
-        // 2. Mouse interaction (gentle repulsion)
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < mouse.radius && dist > 0) {
-          const force = (1 - dist / mouse.radius) * 2.2;
-          const fx = (dx / dist) * force;
-          const fy = (dy / dist) * force;
-          p.x += fx;
-          p.y += fy;
+      // Update click ripples
+      for (let r = ripples.length - 1; r >= 0; r--) {
+        const ripple = ripples[r];
+        ripple.radius += ripple.speed;
+        ripple.strength *= 0.985;
+        if (ripple.radius >= ripple.maxRadius || ripple.strength < 0.2) {
+          ripples.splice(r, 1);
         }
+      }
 
-        // 3. Screen border wrapping with padding
-        const pad = p.size * 2;
-        if (p.x < -pad) p.x = width + pad;
-        if (p.x > width + pad) p.x = -pad;
-        if (p.y < -pad) p.y = height + pad;
-        if (p.y > height + pad) p.y = -pad;
+      const cols = Math.ceil(width / spacing) + 2;
+      const rows = Math.ceil(height / spacing) + 2;
 
-        // 4. Draw particle
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.angle);
-        ctx.strokeStyle = p.color;
-        drawIcon(ctx, p.type, p.size);
-        ctx.restore();
+      for (let i = -1; i < cols; i++) {
+        const originX = i * spacing;
+
+        for (let j = -1; j < rows; j++) {
+          const originY = j * spacing;
+
+          // 1. Ambient gentle idle wave
+          const ambientWave =
+            Math.sin(i * 0.18 + time * 0.8) * Math.cos(j * 0.18 + time * 0.7) * 2.5;
+
+          let posX = originX;
+          let posY = originY + ambientWave;
+          let dotRadius = baseRadius;
+          let alpha = 0.11;
+          let isAccent = false;
+
+          // 2. Interactive mouse wave
+          const dx = originX - mouse.x;
+          const dy = originY - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < mouseInfluenceRadius && dist > 0) {
+            const normDist = dist / mouseInfluenceRadius; // 0 (center) to 1 (edge)
+            const falloff = (1 - normDist);
+
+            // Sine wave propagating away from mouse
+            const wavePhase = dist * 0.055 - time * 2.2;
+            const waveAmp = Math.sin(wavePhase) * falloff * 12;
+
+            // Displace radially
+            const nx = dx / dist;
+            const ny = dy / dist;
+            posX += nx * waveAmp;
+            posY += ny * waveAmp;
+
+            // Scale dot with wave crest
+            dotRadius = baseRadius + Math.max(0, Math.sin(wavePhase)) * falloff * 2.0;
+            alpha = 0.11 + falloff * 0.26;
+
+            if (falloff > 0.4) {
+              isAccent = true;
+            }
+          }
+
+          // 3. Click shockwave ripples
+          for (let r = 0; r < ripples.length; r++) {
+            const ripple = ripples[r];
+            const rdx = originX - ripple.x;
+            const rdy = originY - ripple.y;
+            const rDist = Math.sqrt(rdx * rdx + rdy * rdy);
+            const distDiff = Math.abs(rDist - ripple.radius);
+
+            if (distDiff < 80) {
+              const rFalloff = (1 - distDiff / 80) * (ripple.strength / 22);
+              const rWave = Math.sin((distDiff / 80) * Math.PI) * rFalloff * 14;
+              if (rDist > 0) {
+                posX += (rdx / rDist) * rWave;
+                posY += (rdy / rDist) * rWave;
+              }
+              dotRadius += rFalloff * 1.8;
+              alpha = Math.min(0.6, alpha + rFalloff * 0.35);
+              isAccent = true;
+            }
+          }
+
+          // 4. Draw dot with theme-matching colors
+          ctx.beginPath();
+          ctx.arc(posX, posY, Math.max(0.5, dotRadius), 0, Math.PI * 2);
+
+          if (isAccent) {
+            // Radiant rose/bordeaux accent near wave crest
+            ctx.fillStyle = `rgba(164, 19, 60, ${alpha.toFixed(2)})`;
+          } else {
+            // Subtle warm bordeaux/amber dot in rest state
+            ctx.fillStyle = `rgba(128, 15, 47, ${alpha.toFixed(2)})`;
+          }
+
+          ctx.fill();
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -290,11 +237,13 @@ export function AnimatedKaryanaBackground() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(moveTimeout);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
@@ -304,14 +253,14 @@ export function AnimatedKaryanaBackground() {
       className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
       aria-hidden="true"
     >
-      {/* Warm, radiant gradient background instead of plain white */}
+      {/* Warm, radiant gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#fffdfa] via-[#fff5f5] to-[#fef6ee] transition-colors duration-500" />
-      {/* Subtle radial accent for depth */}
-      <div className="absolute top-0 right-0 w-[60vw] h-[60vh] bg-radial from-rose-200/20 via-pink-100/10 to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[60vw] h-[60vh] bg-radial from-amber-100/20 via-rose-100/10 to-transparent blur-3xl pointer-events-none" />
+      {/* Subtle radial ambient glows */}
+      <div className="absolute top-0 right-0 w-[60vw] h-[60vh] bg-radial from-rose-200/25 via-pink-100/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[60vw] h-[60vh] bg-radial from-amber-100/25 via-rose-100/10 to-transparent blur-3xl pointer-events-none" />
 
-      {/* Interactive animated icons canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+      {/* Interactive wave dotted grid canvas with smooth opacity fade */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full transition-opacity duration-300" />
     </div>
   );
 }

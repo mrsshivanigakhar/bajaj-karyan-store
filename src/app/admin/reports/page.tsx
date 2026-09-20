@@ -1,11 +1,16 @@
-import React from 'react';
-import { createClient } from '@/lib/supabase/server';
-import { getCategories, getProducts, getStoreSettings } from '@/services/store-service';
-import { ReportsHubClient } from './ReportsHubClient';
+import React from "react";
+import { createClient } from "@/lib/supabase/server";
+import {
+  getCategories,
+  getProducts,
+  getStoreSettings,
+} from "@/services/store-service";
+import { ReportsHubClient } from "./ReportsHubClient";
 
 export const metadata = {
-  title: 'Reports & Export Center — Bajaj Karyan Store Admin',
-  description: 'Download business intelligence reports in PDF and Excel formats.',
+  title: "Reports & Export Center — Bajaj karyana Store Admin",
+  description:
+    "Download business intelligence reports in PDF and Excel formats.",
 };
 
 export default async function AdminReportsPage() {
@@ -22,8 +27,14 @@ export default async function AdminReportsPage() {
 
   try {
     const [ordersRes, profilesRes] = await Promise.all([
-      supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
-      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+      supabase
+        .from("orders")
+        .select("*, order_items(*)")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false }),
     ]);
 
     orders = ordersRes.data || [];
@@ -34,7 +45,7 @@ export default async function AdminReportsPage() {
       orders: orders.filter((o) => o.customer_id === p.id),
     }));
   } catch (err) {
-    console.error('Error fetching data for reports:', err);
+    console.error("Error fetching data for reports:", err);
   }
 
   return (
@@ -44,7 +55,8 @@ export default async function AdminReportsPage() {
           Reports & Export Center
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 mt-1">
-          Generate, audit, and download comprehensive store metrics, inventory valuations, and order histories in PDF and Excel formats.
+          Generate, audit, and download comprehensive store metrics, inventory
+          valuations, and order histories in PDF and Excel formats.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useShoppingList } from '@/context/shopping-list-context';
 import { useStoreSettings } from '@/context/store-settings-context';
@@ -9,6 +9,7 @@ import { ShoppingBag, ArrowRight, Trash2, Plus, Minus, AlertCircle, Store } from
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function ShoppingListPage() {
   const {
@@ -16,11 +17,22 @@ export default function ShoppingListPage() {
     removeItem,
     updateQuantity,
     updateNotes,
-    clearList,
     estimatedSubtotal,
     hasPriceOnRequestItems,
   } = useShoppingList();
   const { settings } = useStoreSettings();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil(items.length / PAGE_SIZE);
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const displayedItems = items.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -35,16 +47,6 @@ export default function ShoppingListPage() {
               Review and adjust quantities or notes before requesting delivery.
             </p>
           </div>
-
-          {items.length > 0 && (
-            <button
-              type="button"
-              onClick={clearList}
-              className="text-xs text-rose-800 hover:text-red-600 font-semibold self-start sm:self-auto transition"
-            >
-              Clear Entire List
-            </button>
-          )}
         </div>
 
         {items.length === 0 ? (
@@ -68,7 +70,7 @@ export default function ShoppingListPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* List items */}
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => {
+              {displayedItems.map((item) => {
                 const isWeight = item.unitType === 'kg' || item.unitType === 'gram';
                 const step = isWeight ? 0.5 : 1;
 
@@ -113,7 +115,7 @@ export default function ShoppingListPage() {
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.productId, item.quantity - step)}
-                          className="p-1.5 text-gray-600 hover:text-[#590d22] transition"
+                          className="p-1.5 text-gray-600 hover:text-[#590d22] transition cursor-pointer"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
@@ -123,7 +125,7 @@ export default function ShoppingListPage() {
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.productId, item.quantity + step)}
-                          className="p-1.5 text-gray-600 hover:text-[#590d22] transition"
+                          className="p-1.5 text-gray-600 hover:text-[#590d22] transition cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -140,7 +142,7 @@ export default function ShoppingListPage() {
                       <button
                         type="button"
                         onClick={() => removeItem(item.productId)}
-                        className="text-gray-400 hover:text-red-600 p-1.5 transition"
+                        className="text-gray-400 hover:text-red-600 p-1.5 transition cursor-pointer"
                         title="Remove"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -149,6 +151,18 @@ export default function ShoppingListPage() {
                   </div>
                 );
               })}
+
+              {/* Pagination controls for 10 items/page */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={items.length}
+                pageSize={PAGE_SIZE}
+                onPageChange={(p) => {
+                  setCurrentPage(p);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
             </div>
 
             {/* Order Summary Box */}

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Send, CheckCircle2, Loader2 } from 'lucide-react';
+import React, { useState } from "react";
+import { Send, CheckCircle2, Loader2 } from "lucide-react";
 
 export function ContactFormClient() {
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    subject: '',
-    message: '',
+    name: "",
+    phone: "",
+    email: "",
+    subject: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -23,11 +23,11 @@ export function ContactFormClient() {
       setIsSubmitting(false);
       setIsSuccess(true);
       setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        subject: '',
-        message: '',
+        name: "",
+        phone: "",
+        email: "",
+        subject: "",
+        message: "",
       });
     }, 800);
   };
@@ -36,9 +36,12 @@ export function ContactFormClient() {
     return (
       <div className="p-8 rounded-3xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
         <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-        <h3 className="text-lg font-bold text-emerald-950 font-serif">Message Received!</h3>
+        <h3 className="text-lg font-bold text-emerald-950 font-serif">
+          Message Received!
+        </h3>
         <p className="text-xs sm:text-sm text-emerald-800 max-w-md mx-auto">
-          Thank you for reaching out to Bajaj Karyan Store. Our store team will contact you shortly on your phone or email.
+          Thank you for reaching out to Bajaj karyana Store. Our store team will
+          contact you shortly on your phone or email.
         </p>
         <button
           type="button"
@@ -77,7 +80,9 @@ export function ContactFormClient() {
             required
             placeholder="e.g. +91 98765 43210"
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
             className="w-full text-xs sm:text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
           />
         </div>
@@ -92,7 +97,9 @@ export function ContactFormClient() {
             type="email"
             placeholder="e.g. ramesh@example.com"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             className="w-full text-xs sm:text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
           />
         </div>
@@ -104,13 +111,17 @@ export function ContactFormClient() {
           <select
             required
             value={formData.subject}
-            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, subject: e.target.value })
+            }
             className="w-full text-xs sm:text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
           >
             <option value="">Select subject...</option>
             <option value="Order Status">Check Order Status</option>
             <option value="Bulk Order">Bulk / Wedding / Festive Order</option>
-            <option value="Product Availability">Product Availability / Custom Weight</option>
+            <option value="Product Availability">
+              Product Availability / Custom Weight
+            </option>
             <option value="Feedback / Return">Return or Feedback</option>
             <option value="Other">Other Inquiry</option>
           </select>
@@ -126,7 +137,9 @@ export function ContactFormClient() {
           rows={4}
           placeholder="Tell us what you need, order details, or specific brand requests..."
           value={formData.message}
-          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, message: e.target.value })
+          }
           className="w-full text-xs sm:text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] bg-white text-gray-800"
         />
       </div>

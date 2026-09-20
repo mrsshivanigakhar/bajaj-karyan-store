@@ -66,3 +66,59 @@ body {
     size: auto;
   }
 }
+
+/* Heartbeat animations for notification badges */
+@keyframes heartbeat-fast {
+  0% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.30);
+  }
+  24% {
+    transform: scale(1.06);
+  }
+  36% {
+    transform: scale(1.34);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heartbeat-slow {
+  0% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.22);
+  }
+  20% {
+    transform: scale(1.04);
+  }
+  30% {
+    transform: scale(1.26);
+  }
+  44% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat-fast {
+  animation: heartbeat-fast 1.4s ease-in-out infinite;
+  transform-origin: center center;
+  display: inline-flex;
+}
+
+.animate-heartbeat-slow {
+  animation: heartbeat-slow 2.4s ease-in-out infinite;
+  transform-origin: center center;
+  display: inline-flex;
+}
+

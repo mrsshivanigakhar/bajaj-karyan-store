@@ -1,8 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight, Sparkles, ShieldCheck, Truck } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  Truck,
+  Flame,
+  UtensilsCrossed,
+} from "lucide-react";
 
 interface Slide {
   id: string;
@@ -25,71 +34,132 @@ interface Slide {
 }
 
 const slides: Slide[] = [
+  // Card 1: Daily Staples & Grains
   {
-    id: 'staples',
-    badge: 'Firozpur’s Trusted Grocery Destination',
+    id: "staples",
+    badge: "Firozpur’s Trusted Grocery Destination",
     badgeIcon: <Sparkles className="w-3.5 h-3.5 text-pink-300" />,
-    headline: 'Pure Daily Staples,',
-    highlightedText: 'From Our Store to Your Door.',
+    headline: "Pure Daily Staples,",
+    highlightedText: "From Our Store to Your Door.",
     description:
-      'Aashirvaad Atta, India Gate Basmati, Farm-fresh Dals & 100% Pure Desi Ghee. Choose exact weights or packets with transparent market pricing.',
-    primaryCtaText: 'Shop Daily Staples',
-    primaryCtaHref: '/shop?category=staples-grains',
-    secondaryCtaText: 'Explore Categories',
-    secondaryCtaHref: '/categories',
-    imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Fresh Kiryana Staples and Groceries',
+      "Aashirvaad Atta, India Gate Basmati, Farm-fresh Dals & 100% Pure Desi Ghee. Choose exact weights or packets with transparent market pricing.",
+    primaryCtaText: "Shop Daily Staples",
+    primaryCtaHref: "/shop?category=staples-grains",
+    secondaryCtaText: "Explore Categories",
+    secondaryCtaHref: "/categories",
+    imageUrl:
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Fresh Kiryana Staples and Groceries",
     floatingBadge: {
-      title: 'Daily Essentials',
-      subtitle: 'Atta, Rice, Dal & Desi Ghee',
-      tag: 'In Stock',
+      title: "Daily Essentials",
+      subtitle: "Atta, Rice, Dal & Desi Ghee",
+      tag: "In Stock",
     },
   },
+  // Card 2: Festive Confectionery & Dry Fruits
   {
-    id: 'confectionery',
-    badge: 'Festive Confectionery & Dry Fruits',
-    badgeIcon: <ShieldCheck className="w-3.5 h-3.5 text-pink-300" />,
-    headline: 'Celebrate Every Moment',
-    highlightedText: 'With Handpicked Sweets & Snacks.',
+    id: "confectionery",
+    badge: "Handpicked Quality & Freshness",
+    badgeIcon: <Sparkles className="w-3.5 h-3.5 text-pink-300" />,
+    headline: "Celebrate Every Moment,",
+    highlightedText: "With Handpicked Sweets & Dry Fruits.",
     description:
-      'Premium California Almonds, Crunchy Cashews, Imported Chocolates, and fresh Bakery Rusks for your everyday cravings and festive gifting.',
-    primaryCtaText: 'Explore Confectionery',
-    primaryCtaHref: '/shop?category=packaged-snacks',
-    secondaryCtaText: 'View Biscuits & Snacks',
-    secondaryCtaHref: '/shop?category=packaged-snacks--biscuits-cookies-rusks',
-    imageUrl: 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Premium Dry Fruits, Confectionery and Snacks',
+      "Premium California Almonds, Crunchy Cashews, Imported Chocolates, and fresh Bakery Rusks for your everyday cravings and festive gifting.",
+    primaryCtaText: "Explore Dry Fruits",
+    primaryCtaHref: "/shop?category=dry-fruits-nuts",
+    secondaryCtaText: "View Biscuits & Snacks",
+    secondaryCtaHref: "/shop?category=packaged-snacks",
+    imageUrl:
+      "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Premium Dry Fruits, Confectionery and Snacks",
     floatingBadge: {
-      title: 'Premium Dry Fruits',
-      subtitle: 'California Almonds & Cashews',
-      tag: 'Best Seller',
+      title: "Premium Dry Fruits",
+      subtitle: "California Almonds & Cashews",
+      tag: "Best Seller",
     },
   },
+  // Card 3: 100% Pure Desi Ghee & Fresh Dairy
   {
-    id: 'delivery',
-    badge: 'Zero Risk • Doorstep Verification',
+    id: "desi-ghee",
+    badge: "100% Pure Desi Ghee & Dairy",
+    badgeIcon: <Flame className="w-3.5 h-3.5 text-pink-300" />,
+    headline: "Pure Cow & Buffalo Ghee,",
+    highlightedText: "Golden Aroma in Every Single Spoon.",
+    description:
+      "Amul, Gowardhan, and Mother Dairy pure desi ghee tins, fresh butter, paneer, and rich dairy staples sourced with authentic traditional quality.",
+    primaryCtaText: "Shop Pure Ghee",
+    primaryCtaHref: "/shop?category=cooking-oils-ghee",
+    secondaryCtaText: "View Cooking Oils",
+    secondaryCtaHref: "/shop?category=cooking-oils-ghee",
+    imageUrl:
+      "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Pure Desi Ghee Jar",
+    floatingBadge: {
+      title: "Pure Desi Ghee",
+      subtitle: "Amul, Gowardhan & Mother Dairy",
+      tag: "100% Pure",
+    },
+  },
+  // Card 4: Authentic Spices & Mandi Masalas
+  {
+    id: "spices",
+    badge: "Authentic Mandi Spices & Masalas",
+    badgeIcon: <UtensilsCrossed className="w-3.5 h-3.5 text-pink-300" />,
+    headline: "Aromatic Spices & Masalas,",
+    highlightedText: "The Soul of Authentic Indian Cooking.",
+    description:
+      "MDH, Everest, Catch & Goldiee pure Turmeric, Kashmiri Mirch, Cumin seeds, Cardamom & Garam Masala grounded for rich aroma and taste.",
+    primaryCtaText: "Explore Spices",
+    primaryCtaHref: "/shop?category=spices-masalas",
+    secondaryCtaText: "View All Masalas",
+    secondaryCtaHref: "/shop?category=spices-masalas",
+    imageUrl:
+      "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Indian Spices and Masalas",
+    floatingBadge: {
+      title: "Mandi Spices",
+      subtitle: "MDH, Everest & Catch",
+      tag: "Fresh Aroma",
+    },
+  },
+  // Card 5: Zero-Risk Doorstep Delivery
+  {
+    id: "delivery",
+    badge: "Zero Risk • 20km Firozpur Region",
     badgeIcon: <Truck className="w-3.5 h-3.5 text-pink-300" />,
-    headline: 'Order Without Stress,',
-    highlightedText: 'Inspect at Doorstep, Pay Offline.',
+    headline: "Order Without Stress,",
+    highlightedText: "Inspect at Doorstep, Pay Offline.",
     description:
-      'No upfront payment gateways. Add custom weights (250g, 1kg, 5kg), place your shopping list, and pay via Cash or UPI upon delivery verification.',
-    primaryCtaText: 'Start Your Shopping List',
-    primaryCtaHref: '/shop',
-    secondaryCtaText: 'How It Works',
-    secondaryCtaHref: '#how-it-works',
-    imageUrl: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: 'Bajaj Karyan Store Doorstep Delivery',
+      "Free doorstep delivery on orders above ₹500 across Firozpur. Add exact custom weights, inspect items upon delivery, and pay via Cash or UPI scan.",
+    primaryCtaText: "Start Your Shopping List",
+    primaryCtaHref: "/shop",
+    secondaryCtaText: "How It Works",
+    secondaryCtaHref: "#how-it-works",
+    imageUrl:
+      "https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Bajaj karyana Store Doorstep Delivery",
     floatingBadge: {
-      title: 'Offline Payment',
-      subtitle: 'Cash or UPI on Delivery',
-      tag: 'Zero Online Risk',
+      title: "Offline Payment",
+      subtitle: "Cash or UPI on Delivery",
+      tag: "Zero Risk",
     },
   },
 ];
 
-export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpur' }: { storeName?: string; city?: string }) {
+export function HeroCarousel({
+  storeName = "Bajaj karyana Store",
+  city = "Firozpur",
+}: {
+  storeName?: string;
+  city?: string;
+}) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Typing effect state
+  const [typedHeadline, setTypedHeadline] = useState("");
+  const [typedHighlighted, setTypedHighlighted] = useState("");
+  const [isTypingDone, setIsTypingDone] = useState(false);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -99,21 +169,53 @@ export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpu
     setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   }, []);
 
-  // Autoplay every 5.5 seconds
+  const slide = slides[currentSlide];
+
+  // Typing effect logic
+  useEffect(() => {
+    setTypedHeadline("");
+    setTypedHighlighted("");
+    setIsTypingDone(false);
+
+    let headlineIdx = 0;
+    let highlightIdx = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    const fullHeadline = slide.headline;
+    const fullHighlighted = slide.highlightedText;
+
+    function typeNextChar() {
+      if (headlineIdx < fullHeadline.length) {
+        headlineIdx++;
+        setTypedHeadline(fullHeadline.slice(0, headlineIdx));
+        timeoutId = setTimeout(typeNextChar, 28);
+      } else if (highlightIdx < fullHighlighted.length) {
+        highlightIdx++;
+        setTypedHighlighted(fullHighlighted.slice(0, highlightIdx));
+        timeoutId = setTimeout(typeNextChar, 28);
+      } else {
+        setIsTypingDone(true);
+      }
+    }
+
+    timeoutId = setTimeout(typeNextChar, 80);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentSlide, slide.headline, slide.highlightedText]);
+
+  // Autoplay every 6 seconds
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
       nextSlide();
-    }, 5500);
+    }, 6000);
     return () => clearInterval(interval);
   }, [isPaused, nextSlide]);
-
-  const slide = slides[currentSlide];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
       <div
-        className="relative rounded-3xl overflow-hidden bg-gradient-bordeaux text-white shadow-xl border border-rose-900/40 min-h-[380px] sm:min-h-[440px] lg:min-h-[460px] flex items-center"
+        className="relative rounded-3xl overflow-hidden bg-gradient-bordeaux text-white shadow-xl border border-rose-900/40 min-h-[390px] sm:min-h-[440px] lg:min-h-[460px] flex items-center"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         aria-roledescription="carousel"
@@ -135,11 +237,19 @@ export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpu
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold font-serif tracking-tight leading-tight sm:leading-tight">
-                {slide.headline} <br className="hidden sm:inline" />
-                <span className="text-pink-300 bg-gradient-to-r from-pink-300 via-rose-200 to-amber-200 bg-clip-text text-transparent">
-                  {slide.highlightedText}
+              {/* Text Header with Live Typing Effect */}
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold font-serif tracking-tight leading-tight sm:leading-tight min-h-[64px] sm:min-h-[105px] flex flex-wrap items-baseline justify-center lg:justify-start">
+                <span>{typedHeadline}</span>
+                {typedHeadline && !typedHighlighted && !isTypingDone && (
+                  <span className="inline-block w-0.5 h-6 sm:h-9 bg-pink-300 ml-1 animate-pulse align-middle" />
+                )}
+                <br className="w-full hidden sm:block" />
+                <span className="text-pink-300 bg-gradient-to-r from-pink-300 via-rose-200 to-amber-200 bg-clip-text text-transparent sm:mt-1">
+                  {typedHighlighted}
                 </span>
+                {(typedHighlighted || isTypingDone) && (
+                  <span className="inline-block w-0.5 h-6 sm:h-9 bg-pink-300 ml-1 animate-pulse align-middle" />
+                )}
               </h1>
 
               <p className="text-xs sm:text-sm lg:text-base text-rose-100/90 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
@@ -166,16 +276,28 @@ export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpu
               {/* Quick highlight bar */}
               <div className="pt-4 border-t border-rose-800/40 grid grid-cols-3 gap-2 text-center">
                 <div className="p-1.5 rounded-xl bg-rose-950/40 border border-rose-900/30">
-                  <span className="block text-lg sm:text-xl font-bold text-white">1,100+</span>
-                  <span className="text-[10px] sm:text-xs text-rose-200">Fresh Products</span>
+                  <span className="block text-lg sm:text-xl font-bold text-white">
+                    1,100+
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-rose-200">
+                    Fresh Products
+                  </span>
                 </div>
                 <div className="p-1.5 rounded-xl bg-rose-950/40 border border-rose-900/30">
-                  <span className="block text-lg sm:text-xl font-bold text-white">₹0 Fee</span>
-                  <span className="text-[10px] sm:text-xs text-rose-200">Pay on Delivery</span>
+                  <span className="block text-lg sm:text-xl font-bold text-white">
+                    ₹0 Fee
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-rose-200">
+                    Pay on Delivery
+                  </span>
                 </div>
                 <div className="p-1.5 rounded-xl bg-rose-950/40 border border-rose-900/30">
-                  <span className="block text-lg sm:text-xl font-bold text-white">100%</span>
-                  <span className="text-[10px] sm:text-xs text-rose-200">Quality Assured</span>
+                  <span className="block text-lg sm:text-xl font-bold text-white">
+                    100%
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-rose-200">
+                    Quality Assured
+                  </span>
                 </div>
               </div>
             </div>
@@ -187,7 +309,7 @@ export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpu
                   src={slide.imageUrl}
                   alt={slide.imageAlt}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  fetchPriority={currentSlide === 0 ? 'high' : 'auto'}
+                  fetchPriority={currentSlide === 0 ? "high" : "auto"}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#590d22]/90 via-transparent to-transparent flex items-end p-4">
                   <div className="bg-white/95 backdrop-blur-md rounded-xl p-3 text-[#590d22] shadow-lg w-full flex items-center justify-between">
@@ -242,7 +364,9 @@ export function HeroCarousel({ storeName = 'Bajaj Karyan Store', city = 'Firozpu
               aria-label={`Go to slide ${idx + 1}: ${s.headline}`}
               onClick={() => setCurrentSlide(idx)}
               className={`transition-all duration-300 rounded-full h-2 ${
-                currentSlide === idx ? 'w-7 bg-[#ff4d6d]' : 'w-2 bg-white/40 hover:bg-white/70'
+                currentSlide === idx
+                  ? "w-7 bg-[#ff4d6d]"
+                  : "w-2 bg-white/40 hover:bg-white/70"
               }`}
             />
           ))}

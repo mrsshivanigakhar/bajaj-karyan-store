@@ -9,8 +9,9 @@ interface PaginationProps {
   totalPages: number;
   totalItems: number;
   pageSize: number;
-  baseUrl: string;
+  baseUrl?: string;
   queryParams?: Record<string, string | undefined>;
+  onPageChange?: (page: number) => void;
 }
 
 export function Pagination({
@@ -18,8 +19,9 @@ export function Pagination({
   totalPages,
   totalItems,
   pageSize,
-  baseUrl,
+  baseUrl = '',
   queryParams = {},
+  onPageChange,
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
@@ -61,6 +63,39 @@ export function Pagination({
 
   const pageNumbers = getPageNumbers();
 
+  const renderButton = (
+    targetPage: number,
+    content: React.ReactNode,
+    className: string,
+    ariaLabel?: string,
+    isActive?: boolean
+  ) => {
+    if (onPageChange) {
+      return (
+        <button
+          type="button"
+          onClick={() => onPageChange(targetPage)}
+          className={className}
+          aria-label={ariaLabel}
+          aria-current={isActive ? 'page' : undefined}
+        >
+          {content}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        href={createPageUrl(targetPage)}
+        className={className}
+        aria-label={ariaLabel}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        {content}
+      </Link>
+    );
+  };
+
   return (
     <div className="mt-10 pt-6 border-t border-rose-100 flex flex-col sm:flex-row items-center justify-between gap-4">
       {/* Item range summary */}
@@ -74,14 +109,15 @@ export function Pagination({
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Previous Button */}
         {currentPage > 1 ? (
-          <Link
-            href={createPageUrl(currentPage - 1)}
-            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-xl border border-rose-200 bg-white text-gray-700 hover:bg-rose-50 hover:text-[#800f2f] transition shadow-xs"
-            aria-label="Previous page"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Prev</span>
-          </Link>
+          renderButton(
+            currentPage - 1,
+            <>
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Prev</span>
+            </>,
+            'inline-flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-xl border border-rose-200 bg-white text-gray-700 hover:bg-rose-50 hover:text-[#800f2f] transition shadow-xs cursor-pointer',
+            'Previous page'
+          )
         ) : (
           <button
             disabled
@@ -110,33 +146,31 @@ export function Pagination({
             const pageNum = p as number;
             const isActive = pageNum === currentPage;
 
-            return (
-              <Link
-                key={pageNum}
-                href={createPageUrl(pageNum)}
-                className={`min-w-9 h-9 flex items-center justify-center text-xs font-bold rounded-xl transition ${
-                  isActive
-                    ? 'bg-[#800f2f] text-white shadow-xs'
-                    : 'bg-white border border-rose-200/80 text-gray-700 hover:bg-rose-50 hover:text-[#800f2f]'
-                }`}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                {pageNum}
-              </Link>
+            return renderButton(
+              pageNum,
+              pageNum,
+              `min-w-9 h-9 flex items-center justify-center text-xs font-bold rounded-xl transition cursor-pointer ${
+                isActive
+                  ? 'bg-[#800f2f] text-white shadow-xs'
+                  : 'bg-white border border-rose-200/80 text-gray-700 hover:bg-rose-50 hover:text-[#800f2f]'
+              }`,
+              undefined,
+              isActive
             );
           })}
         </div>
 
         {/* Next Button */}
         {currentPage < totalPages ? (
-          <Link
-            href={createPageUrl(currentPage + 1)}
-            className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-xl border border-rose-200 bg-white text-gray-700 hover:bg-rose-50 hover:text-[#800f2f] transition shadow-xs"
-            aria-label="Next page"
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          renderButton(
+            currentPage + 1,
+            <>
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </>,
+            'inline-flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-xl border border-rose-200 bg-white text-gray-700 hover:bg-rose-50 hover:text-[#800f2f] transition shadow-xs cursor-pointer',
+            'Next page'
+          )
         ) : (
           <button
             disabled

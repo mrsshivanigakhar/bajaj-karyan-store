@@ -1,13 +1,24 @@
-import React from 'react';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getOrderById } from '@/services/store-service';
-import { formatCurrency, formatDate, formatUnit } from '@/lib/utils';
-import { OrderStatusBadge, PaymentStatusBadge } from '@/components/admin/OrderStatusBadge';
-import { OrderTimeline } from '@/components/admin/OrderTimeline';
-import { ArrowLeft, MapPin, Phone, User, Clock, AlertCircle, ShoppingBag } from 'lucide-react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import React from "react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getOrderById } from "@/services/store-service";
+import { formatCurrency, formatDate, formatUnit } from "@/lib/utils";
+import {
+  OrderStatusBadge,
+  PaymentStatusBadge,
+} from "@/components/admin/OrderStatusBadge";
+import { OrderTimeline } from "@/components/admin/OrderTimeline";
+import {
+  ArrowLeft,
+  MapPin,
+  Phone,
+  User,
+  Clock,
+  AlertCircle,
+  ShoppingBag,
+} from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 interface OrderDetailPageProps {
   params: Promise<{
@@ -15,7 +26,9 @@ interface OrderDetailPageProps {
   }>;
 }
 
-export default async function CustomerOrderDetailPage({ params }: OrderDetailPageProps) {
+export default async function CustomerOrderDetailPage({
+  params,
+}: OrderDetailPageProps) {
   const { id } = await params;
   const order = await getOrderById(id);
 
@@ -41,7 +54,7 @@ export default async function CustomerOrderDetailPage({ params }: OrderDetailPag
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-rose-100 gap-4">
             <div>
               <span className="text-xs text-gray-500 uppercase tracking-wider block">
-                Bajaj Karyan Store Order
+                Bajaj karyana Store Order
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[#590d22] font-mono">
                 {order.order_number}
@@ -127,7 +140,9 @@ export default async function CustomerOrderDetailPage({ params }: OrderDetailPag
                 {order.order_items?.map((item) => (
                   <tr key={item.id} className="py-3">
                     <td className="py-3 pr-2">
-                      <span className="font-bold text-gray-900 block">{item.product_name}</span>
+                      <span className="font-bold text-gray-900 block">
+                        {item.product_name}
+                      </span>
                       {item.customer_notes && (
                         <span className="text-[11px] text-gray-500 italic block">
                           Note: {item.customer_notes}
@@ -135,8 +150,8 @@ export default async function CustomerOrderDetailPage({ params }: OrderDetailPag
                       )}
                     </td>
                     <td className="py-3 text-gray-700">
-                      {item.quantity}{' '}
-                      {item.unit_type === 'kg' || item.unit_type === 'gram'
+                      {item.quantity}{" "}
+                      {item.unit_type === "kg" || item.unit_type === "gram"
                         ? item.unit_type
                         : formatUnit(item.unit_type, item.unit_value)}
                       {item.requested_weight && (
@@ -149,7 +164,9 @@ export default async function CustomerOrderDetailPage({ params }: OrderDetailPag
                       {item.unit_price !== null ? (
                         formatCurrency(item.unit_price)
                       ) : (
-                        <span className="text-pink-700 font-medium">To be confirmed</span>
+                        <span className="text-pink-700 font-medium">
+                          To be confirmed
+                        </span>
                       )}
                     </td>
                     <td className="py-3 text-right font-bold text-gray-900">
@@ -182,7 +199,9 @@ export default async function CustomerOrderDetailPage({ params }: OrderDetailPag
             <div className="flex justify-between text-gray-600">
               <span>Delivery Charge</span>
               <span className="font-semibold text-gray-900">
-                {order.delivery_charge === 0 ? 'Free' : formatCurrency(order.delivery_charge)}
+                {order.delivery_charge === 0
+                  ? "Free"
+                  : formatCurrency(order.delivery_charge)}
               </span>
             </div>
             <div className="pt-2 border-t border-rose-100 flex justify-between items-baseline text-base font-bold text-gray-900">

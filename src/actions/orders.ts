@@ -202,6 +202,12 @@ export async function createOrderAction(formData: {
     };
   } catch (err: any) {
     console.error('Order creation error:', err);
+    if (err?.errors && Array.isArray(err.errors) && err.errors.length > 0) {
+      return {
+        success: false,
+        error: err.errors[0].message,
+      };
+    }
     return {
       success: false,
       error: err?.message || 'Unable to place order. Please check your information and try again.',

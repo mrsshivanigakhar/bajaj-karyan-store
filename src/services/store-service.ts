@@ -59,11 +59,53 @@ export interface PaginatedProductsResult {
   totalPages: number;
 }
 
+export function parseDietaryIntent(search?: string, dietaryOption?: string): {
+  dietaryFilter?: 'veg' | 'non-veg' | 'egg';
+  cleanedSearch?: string;
+} {
+  if (dietaryOption === 'veg' || dietaryOption === 'non-veg' || dietaryOption === 'egg') {
+    return { dietaryFilter: dietaryOption, cleanedSearch: search?.trim() };
+  }
+
+  if (!search) return {};
+
+  const lower = search.toLowerCase().trim();
+
+  // Check for non-veg keywords first
+  if (/^(non[-\s]?veg|non-vegetarian|meat|chicken|fish)$/i.test(lower)) {
+    return { dietaryFilter: 'non-veg', cleanedSearch: '' };
+  }
+  if (/^egg$/i.test(lower)) {
+    return { dietaryFilter: 'egg', cleanedSearch: '' };
+  }
+
+  // Check for veg keywords
+  if (/^(veg|vegetarian|vegan|pure\s+veg|shuddh\s+shakahari)$/i.test(lower)) {
+    return { dietaryFilter: 'veg', cleanedSearch: '' };
+  }
+
+  // Check for compound searches like "non veg snacks" or "vegetarian biscuits"
+  const nonVegCompound = lower.match(/^(?:non[-\s]?veg|non-vegetarian)\s+(.+)$/i);
+  if (nonVegCompound) {
+    return { dietaryFilter: 'non-veg', cleanedSearch: nonVegCompound[1].trim() };
+  }
+
+  const vegCompound = lower.match(/^(?:veg|vegetarian|vegan|pure\s+veg)\s+(.+)$/i);
+  if (vegCompound) {
+    return { dietaryFilter: 'veg', cleanedSearch: vegCompound[1].trim() };
+  }
+
+  return { cleanedSearch: search.trim() };
+}
+
 export async function getPaginatedProducts(options?: {
   categorySlug?: string;
   featuredOnly?: boolean;
   search?: string;
   priceType?: string;
+  dietary?: string;
+  minPrice?: number;
+  maxPrice?: number;
   page?: number;
   pageSize?: number;
 }): Promise<PaginatedProductsResult> {
@@ -71,6 +113,8 @@ export async function getPaginatedProducts(options?: {
   const pageSize = Math.max(1, options?.pageSize || 20);
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
+
+  const { dietaryFilter, cleanedSearch } = parseDietaryIntent(options?.search, options?.dietary);
 
   try {
     const supabase = await createClient();
@@ -120,8 +164,34 @@ export async function getPaginatedProducts(options?: {
       query = query.is('price', null);
     }
 
-    if (options?.search) {
-      query = query.ilike('name', `%${options.search}%`);
+    if (options?.minPrice !== undefined || options?.maxPrice !== undefined) {
+      const min = options.minPrice;
+      const max = options.maxPrice;
+      if (min !== undefined && max !== undefined) {
+        query = query.or(
+          `and(sale_price.is.null,price.gte.${min},price.lte.${max}),and(sale_price.not.is.null,sale_price.gte.${min},sale_price.lte.${max})`
+        );
+      } else if (min !== undefined) {
+        query = query.or(
+          `and(sale_price.is.null,price.gte.${min}),and(sale_price.not.is.null,sale_price.gte.${min})`
+        );
+      } else if (max !== undefined) {
+        query = query.or(
+          `and(sale_price.is.null,price.not.is.null,price.lte.${max}),and(sale_price.not.is.null,sale_price.lte.${max})`
+        );
+      }
+    }
+
+    if (dietaryFilter) {
+      if (dietaryFilter === 'veg') {
+        query = query.or('dietary_preference.eq.veg,dietary_preference.is.null');
+      } else {
+        query = query.eq('dietary_preference', dietaryFilter);
+      }
+    }
+
+    if (cleanedSearch) {
+      query = query.ilike('name', `%${cleanedSearch}%`);
     }
 
     query = query
@@ -160,8 +230,27 @@ export async function getPaginatedProducts(options?: {
   } else if (options?.priceType === 'request') {
     products = products.filter((p) => p.price === null);
   }
-  if (options?.search) {
-    const term = options.search.toLowerCase();
+
+  if (options?.minPrice !== undefined || options?.maxPrice !== undefined) {
+    products = products.filter((p) => {
+      const eff = p.sale_price ?? p.price;
+      if (eff === null || eff === undefined) return false;
+      if (options.minPrice !== undefined && eff < options.minPrice) return false;
+      if (options.maxPrice !== undefined && eff > options.maxPrice) return false;
+      return true;
+    });
+  }
+
+  if (dietaryFilter) {
+    if (dietaryFilter === 'veg') {
+      products = products.filter((p) => !p.dietary_preference || p.dietary_preference === 'veg');
+    } else {
+      products = products.filter((p) => p.dietary_preference === dietaryFilter);
+    }
+  }
+
+  if (cleanedSearch) {
+    const term = cleanedSearch.toLowerCase();
     products = products.filter(
       (p) =>
         p.name.toLowerCase().includes(term) ||
@@ -238,8 +327,11 @@ export async function getProducts(options?: {
   categorySlug?: string;
   featuredOnly?: boolean;
   search?: string;
+  dietary?: string;
   limit?: number;
 }): Promise<Product[]> {
+  const { dietaryFilter, cleanedSearch } = parseDietaryIntent(options?.search, options?.dietary);
+
   try {
     const supabase = await createClient();
     let query = supabase
@@ -251,8 +343,16 @@ export async function getProducts(options?: {
       query = query.eq('is_featured', true);
     }
 
-    if (options?.search) {
-      query = query.ilike('name', `%${options.search}%`);
+    if (dietaryFilter) {
+      if (dietaryFilter === 'veg') {
+        query = query.or('dietary_preference.eq.veg,dietary_preference.is.null');
+      } else {
+        query = query.eq('dietary_preference', dietaryFilter);
+      }
+    }
+
+    if (cleanedSearch) {
+      query = query.ilike('name', `%${cleanedSearch}%`);
     }
 
     if (options?.limit) {
@@ -289,8 +389,17 @@ export async function getProducts(options?: {
       products = products.filter((p) => p.category_id === category.id);
     }
   }
-  if (options?.search) {
-    const term = options.search.toLowerCase();
+
+  if (dietaryFilter) {
+    if (dietaryFilter === 'veg') {
+      products = products.filter((p) => !p.dietary_preference || p.dietary_preference === 'veg');
+    } else {
+      products = products.filter((p) => p.dietary_preference === dietaryFilter);
+    }
+  }
+
+  if (cleanedSearch) {
+    const term = cleanedSearch.toLowerCase();
     products = products.filter(
       (p) =>
         p.name.toLowerCase().includes(term) ||
@@ -306,6 +415,79 @@ export async function getProducts(options?: {
     ...p,
     category: fallbackCategories.find((c) => c.id === p.category_id) || null,
   }));
+}
+
+export interface DealsGroup {
+  all: Product[];
+  tier10to15: Product[];
+  tier16to25: Product[];
+  tier26to35: Product[];
+  tierAbove35: Product[];
+}
+
+export async function getDealsProducts(): Promise<DealsGroup> {
+  let products: Product[] = [];
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, category:categories(*)')
+      .eq('is_active', true)
+      .not('price', 'is', null)
+      .not('sale_price', 'is', null);
+
+    if (!error && data && data.length > 0) {
+      products = (data as Product[]).filter(
+        (p) => p.price !== null && p.sale_price !== null && p.sale_price < p.price
+      );
+    }
+  } catch {
+    // fallback
+  }
+
+  if (products.length === 0) {
+    products = fallbackProducts
+      .filter((p) => p.price !== null && p.sale_price !== null && p.sale_price < p.price)
+      .map((p) => ({
+        ...p,
+        category: fallbackCategories.find((c) => c.id === p.category_id) || null,
+      }));
+  }
+
+  // Sort by discount percentage descending
+  const sorted = [...products].sort((a, b) => {
+    const discA = Math.round((((a.price || 0) - (a.sale_price || 0)) / (a.price || 1)) * 100);
+    const discB = Math.round((((b.price || 0) - (b.sale_price || 0)) / (b.price || 1)) * 100);
+    return discB - discA;
+  });
+
+  const tier10to15: Product[] = [];
+  const tier16to25: Product[] = [];
+  const tier26to35: Product[] = [];
+  const tierAbove35: Product[] = [];
+
+  sorted.forEach((p) => {
+    if (!p.price || !p.sale_price) return;
+    const discount = Math.round(((p.price - p.sale_price) / p.price) * 100);
+    if (discount >= 10 && discount <= 15) {
+      tier10to15.push(p);
+    } else if (discount >= 16 && discount <= 25) {
+      tier16to25.push(p);
+    } else if (discount >= 26 && discount <= 35) {
+      tier26to35.push(p);
+    } else if (discount > 35) {
+      tierAbove35.push(p);
+    }
+  });
+
+  return {
+    all: sorted,
+    tier10to15,
+    tier16to25,
+    tier26to35,
+    tierAbove35,
+  };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {

@@ -1,11 +1,20 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, AlertCircle, Edit3 } from 'lucide-react';
-import { useShoppingList } from '@/context/shopping-list-context';
-import { useStoreSettings } from '@/context/store-settings-context';
-import { formatCurrency, formatUnit } from '@/lib/utils';
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  X,
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  ArrowRight,
+  AlertCircle,
+  Edit3,
+} from "lucide-react";
+import { useShoppingList } from "@/context/shopping-list-context";
+import { useStoreSettings } from "@/context/store-settings-context";
+import { formatCurrency, formatUnit } from "@/lib/utils";
 
 export function ShoppingListDrawer() {
   const {
@@ -44,7 +53,8 @@ export function ShoppingListDrawer() {
               <div>
                 <h2 className="text-lg font-bold">My Shopping List</h2>
                 <p className="text-xs text-rose-200">
-                  {items.length} {items.length === 1 ? 'item' : 'items'} in your list
+                  {items.length} {items.length === 1 ? "item" : "items"} in your
+                  list
                 </p>
               </div>
             </div>
@@ -76,9 +86,12 @@ export function ShoppingListDrawer() {
                 <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-400 mb-4">
                   <ShoppingBag className="w-8 h-8" />
                 </div>
-                <h3 className="font-bold text-gray-800 text-lg mb-1">Your list is empty</h3>
+                <h3 className="font-bold text-gray-800 text-lg mb-1">
+                  Your list is empty
+                </h3>
                 <p className="text-sm text-gray-500 max-w-xs mb-6">
-                  Browse our grocery and confectionery collection to add items to your shopping list.
+                  Browse our grocery and confectionery collection to add items
+                  to your shopping list.
                 </p>
                 <button
                   type="button"
@@ -90,7 +103,8 @@ export function ShoppingListDrawer() {
               </div>
             ) : (
               items.map((item) => {
-                const isWeight = item.unitType === 'kg' || item.unitType === 'gram';
+                const isWeight =
+                  item.unitType === "kg" || item.unitType === "gram";
                 const step = isWeight ? 0.5 : 1;
 
                 return (
@@ -144,7 +158,7 @@ export function ShoppingListDrawer() {
                                 </span>
                               </>
                             ) : (
-                              'Price to be confirmed'
+                              "Price to be confirmed"
                             )}
                           </span>
                         </div>
@@ -156,17 +170,21 @@ export function ShoppingListDrawer() {
                       <div className="flex items-center gap-1.5">
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.productId, item.quantity - step)}
+                          onClick={() =>
+                            updateQuantity(item.productId, item.quantity - step)
+                          }
                           className="w-7 h-7 rounded-md bg-white border border-rose-200 text-gray-700 flex items-center justify-center hover:bg-rose-100 transition"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
                         <span className="text-xs font-bold text-gray-800 min-w-[32px] text-center">
-                          {item.quantity} {isWeight ? item.unitType : ''}
+                          {item.quantity} {isWeight ? item.unitType : ""}
                         </span>
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.productId, item.quantity + step)}
+                          onClick={() =>
+                            updateQuantity(item.productId, item.quantity + step)
+                          }
                           className="w-7 h-7 rounded-md bg-white border border-rose-200 text-gray-700 flex items-center justify-center hover:bg-rose-100 transition"
                         >
                           <Plus className="w-3 h-3" />
@@ -177,12 +195,18 @@ export function ShoppingListDrawer() {
                       <button
                         type="button"
                         onClick={() =>
-                          setEditingNoteId(editingNoteId === item.productId ? null : item.productId)
+                          setEditingNoteId(
+                            editingNoteId === item.productId
+                              ? null
+                              : item.productId,
+                          )
                         }
                         className="text-xs text-rose-800 hover:text-[#590d22] flex items-center gap-1 font-medium"
                       >
                         <Edit3 className="w-3 h-3" />
-                        <span>{item.customerNotes ? 'Edit Note' : 'Add Note'}</span>
+                        <span>
+                          {item.customerNotes ? "Edit Note" : "Add Note"}
+                        </span>
                       </button>
                     </div>
 
@@ -192,8 +216,10 @@ export function ShoppingListDrawer() {
                         <input
                           type="text"
                           placeholder="e.g. Fine sugar, specific brand, ripe, etc."
-                          value={item.customerNotes || ''}
-                          onChange={(e) => updateNotes(item.productId, e.target.value)}
+                          value={item.customerNotes || ""}
+                          onChange={(e) =>
+                            updateNotes(item.productId, e.target.value)
+                          }
                           className="w-full text-xs p-2 rounded-md border border-rose-300 focus:outline-none focus:ring-1 focus:ring-rose-500 bg-white"
                         />
                       </div>
@@ -217,7 +243,9 @@ export function ShoppingListDrawer() {
                 <div className="flex items-start gap-2 text-xs text-[#800f2f] bg-rose-100/70 p-2.5 rounded-lg border border-rose-200">
                   <AlertCircle className="w-4 h-4 text-pink-600 shrink-0 mt-0.5" />
                   <span>
-                    Some items do not have fixed prices. The final total will be confirmed by {settings.store_name || 'Bajaj Karyan Store'} before delivery.
+                    Some items do not have fixed prices. The final total will be
+                    confirmed by {settings.store_name || "Bajaj karyana Store"}{" "}
+                    before delivery.
                   </span>
                 </div>
               )}
@@ -230,7 +258,8 @@ export function ShoppingListDrawer() {
               </div>
 
               <p className="text-[11px] text-gray-500">
-                Delivery charges & offline payment details calculated at checkout.
+                Delivery charges & offline payment details calculated at
+                checkout.
               </p>
 
               <Link

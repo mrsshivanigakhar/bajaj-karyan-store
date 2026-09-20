@@ -1,17 +1,20 @@
-import React from 'react';
-import Link from 'next/link';
-import { getCurrentUser } from '@/lib/auth/admin';
-import { getOrdersForUser } from '@/services/store-service';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import { OrderStatusBadge, PaymentStatusBadge } from '@/components/admin/OrderStatusBadge';
-import { ShoppingBag, ArrowRight, Package, Clock } from 'lucide-react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { MobileNav } from '@/components/layout/MobileNav';
+import React from "react";
+import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth/admin";
+import { getOrdersForUser } from "@/services/store-service";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import {
+  OrderStatusBadge,
+  PaymentStatusBadge,
+} from "@/components/admin/OrderStatusBadge";
+import { ShoppingBag, ArrowRight, Package, Clock } from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { MobileNav } from "@/components/layout/MobileNav";
 
 export const metadata = {
-  title: 'My Orders — Bajaj Karyan Store',
-  description: 'View your order history and track order delivery status.',
+  title: "My Orders — Bajaj karyana Store",
+  description: "View your order history and track order delivery status.",
 };
 
 export default async function CustomerOrdersPage() {
@@ -27,16 +30,20 @@ export default async function CustomerOrdersPage() {
             My Orders
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Track previous orders, view receipt details, and monitor delivery progress.
+            Track previous orders, view receipt details, and monitor delivery
+            progress.
           </p>
         </div>
 
         {!user ? (
           <div className="bg-white p-8 rounded-3xl border border-rose-100 text-center shadow-xs">
             <Package className="w-12 h-12 text-rose-300 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Sign In to View Orders</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">
+              Sign In to View Orders
+            </h2>
             <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
-              Please log in with your registered account to view your past orders and status.
+              Please log in with your registered account to view your past
+              orders and status.
             </p>
             <Link
               href="/auth/login?redirect=/account/orders"
@@ -48,9 +55,11 @@ export default async function CustomerOrdersPage() {
         ) : orders.length === 0 ? (
           <div className="bg-white p-12 rounded-3xl border border-rose-100 text-center shadow-xs">
             <ShoppingBag className="w-12 h-12 text-rose-300 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-gray-900 mb-1">No orders yet</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">
+              No orders yet
+            </h2>
             <p className="text-sm text-gray-500 mb-6">
-              You haven't placed any orders with Bajaj Karyan Store yet.
+              You haven't placed any orders with Bajaj karyana Store yet.
             </p>
             <Link
               href="/shop"
@@ -80,7 +89,8 @@ export default async function CustomerOrdersPage() {
                       {formatDate(order.created_at)}
                     </span>
                     <span>
-                      {order.order_items?.length || 0} {order.order_items?.length === 1 ? 'item' : 'items'}
+                      {order.order_items?.length || 0}{" "}
+                      {order.order_items?.length === 1 ? "item" : "items"}
                     </span>
                     <PaymentStatusBadge status={order.payment_status} />
                   </div>
@@ -92,7 +102,9 @@ export default async function CustomerOrdersPage() {
                       Total
                     </span>
                     <span className="text-base font-extrabold text-[#590d22]">
-                      {formatCurrency(order.final_total || order.estimated_total)}
+                      {formatCurrency(
+                        order.final_total || order.estimated_total,
+                      )}
                     </span>
                   </div>
 

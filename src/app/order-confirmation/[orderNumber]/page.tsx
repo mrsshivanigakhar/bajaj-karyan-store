@@ -1,17 +1,24 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import confetti from 'canvas-confetti';
-import { CheckCircle2, Clock, Phone, ArrowRight, Store, FileText } from 'lucide-react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { useStoreSettings } from '@/context/store-settings-context';
+import React, { useEffect } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import confetti from "canvas-confetti";
+import {
+  CheckCircle2,
+  Clock,
+  Phone,
+  ArrowRight,
+  Store,
+  FileText,
+} from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { useStoreSettings } from "@/context/store-settings-context";
 
 export default function OrderConfirmationPage() {
   const params = useParams();
-  const orderNumber = (params?.orderNumber as string) || 'BKS-2026-ORDER';
+  const orderNumber = (params?.orderNumber as string) || "BKS-2026-ORDER";
   const { settings } = useStoreSettings();
 
   useEffect(() => {
@@ -20,7 +27,7 @@ export default function OrderConfirmationPage() {
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#590d22', '#800f2f', '#ff4d6d', '#ff758f', '#ffb3c1'],
+        colors: ["#590d22", "#800f2f", "#ff4d6d", "#ff758f", "#ffb3c1"],
       });
     } catch {
       // ignore
@@ -45,9 +52,11 @@ export default function OrderConfirmationPage() {
         </h1>
 
         <p className="text-base text-gray-600 max-w-lg mb-8 leading-relaxed">
-          Thank you for shopping with{' '}
-          <strong className="text-gray-900">{settings.store_name || 'Bajaj Karyan Store'}</strong>.
-          Your order has been received and sent to our store desk.
+          Thank you for shopping with{" "}
+          <strong className="text-gray-900">
+            {settings.store_name || "Bajaj karyana Store"}
+          </strong>
+          . Your order has been received and sent to our store desk.
         </p>
 
         {/* Order Reference Box */}
@@ -73,7 +82,8 @@ export default function OrderConfirmationPage() {
                 1
               </div>
               <p>
-                Our store staff will review your requested items and weights, and confirm any market-rate item pricing.
+                Our store staff will review your requested items and weights,
+                and confirm any market-rate item pricing.
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -81,7 +91,8 @@ export default function OrderConfirmationPage() {
                 2
               </div>
               <p>
-                Your package will be carefully prepared and dispatched with a printed receipt.
+                Your package will be carefully prepared and dispatched with a
+                printed receipt.
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -89,7 +100,8 @@ export default function OrderConfirmationPage() {
                 3
               </div>
               <p>
-                You can inspect the items at your door and pay via Cash or UPI on delivery.
+                You can inspect the items at your door and pay via Cash or UPI
+                on delivery.
               </p>
             </div>
           </div>
@@ -98,7 +110,7 @@ export default function OrderConfirmationPage() {
             <span>Questions regarding this order?</span>
             {settings.phone && (
               <a
-                href={`tel:${settings.phone.replace(/[^+\d]/g, '')}`}
+                href={`tel:${settings.phone.replace(/[^+\d]/g, "")}`}
                 className="font-bold text-[#590d22] hover:underline flex items-center gap-1"
               >
                 <Phone className="w-3.5 h-3.5" />

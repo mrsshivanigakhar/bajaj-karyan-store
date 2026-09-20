@@ -7,6 +7,7 @@ import { formatCurrency, formatUnit } from '@/lib/utils';
 import { useShoppingList } from '@/context/shopping-list-context';
 import { FavoriteButton } from '@/components/products/FavoriteButton';
 import { ChevronLeft, ChevronRight, ShoppingBag, Check, Zap, Package } from 'lucide-react';
+import { getProductTheme } from '@/lib/product-themes';
 
 interface RelatedProductsCarouselProps {
   products: Product[];
@@ -130,20 +131,21 @@ export function RelatedProductsCarousel({
         onScroll={checkScroll}
         className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 pt-1 px-1 -mx-1 scrollbar-thin scrollbar-thumb-rose-200"
       >
-        {products.map((product) => {
+        {products.map((product, idx) => {
           const isAdded = addedIds[product.id];
+          const theme = getProductTheme(idx);
 
           return (
             <div
               key={product.id}
-              className="snap-start shrink-0 flex flex-col justify-between bg-white rounded-2xl border border-rose-100 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 group
+              className={`snap-start shrink-0 flex flex-col justify-between bg-white rounded-2xl border ${theme.border} overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 group
                 w-[calc((100%-1*0.75rem)/2)] min-w-[155px]
                 sm:w-[calc((100%-2*1rem)/3)] sm:min-w-[190px]
                 md:w-[calc((100%-3*1rem)/4)] md:min-w-[190px]
-                lg:w-[calc((100%-5*1rem)/6)] lg:min-w-[calc((100%-5*1rem)/6)]"
+                lg:w-[calc((100%-5*1rem)/6)] lg:min-w-[calc((100%-5*1rem)/6)]`}
             >
               {/* Product Card Top: Image & Heart */}
-              <div className="relative w-full aspect-square bg-rose-50/50 overflow-hidden">
+              <div className={`relative w-full aspect-square ${theme.imageBg} overflow-hidden`}>
                 <Link href={`/products/${product.slug}`} className="block w-full h-full">
                   {product.image_url ? (
                     <img
@@ -171,7 +173,7 @@ export function RelatedProductsCarousel({
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                   {product.is_featured && (
-                    <span className="bg-[#800f2f] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                    <span className={`${theme.badge} text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs`}>
                       Featured
                     </span>
                   )}
@@ -187,13 +189,13 @@ export function RelatedProductsCarousel({
               <div className="p-3 flex flex-col flex-1 justify-between space-y-2">
                 <div>
                   {product.category && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#800f2f] line-clamp-1">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.price} line-clamp-1`}>
                       {product.category.name}
                     </span>
                   )}
                   <Link href={`/products/${product.slug}`}>
                     <h3
-                      className="font-bold text-gray-900 group-hover:text-[#800f2f] transition text-xs sm:text-sm line-clamp-2 mt-0.5"
+                      className={`font-bold text-gray-900 ${theme.accentHover} transition text-xs sm:text-sm line-clamp-2 mt-0.5`}
                       title={product.name}
                     >
                       {product.name}
@@ -205,7 +207,7 @@ export function RelatedProductsCarousel({
                 <div className="pt-1 border-t border-rose-50">
                   {product.price !== null ? (
                     <div className="flex items-baseline gap-1">
-                      <span className="text-sm sm:text-base font-extrabold text-[#590d22]">
+                      <span className={`text-sm sm:text-base font-extrabold ${theme.price}`}>
                         {formatCurrency(product.sale_price || product.price)}
                       </span>
                       {product.sale_price && (
@@ -218,7 +220,7 @@ export function RelatedProductsCarousel({
                       </span>
                     </div>
                   ) : (
-                    <span className="text-[11px] font-bold text-[#800f2f]">
+                    <span className={`text-[11px] font-bold ${theme.price}`}>
                       Price on Request
                     </span>
                   )}
@@ -236,17 +238,17 @@ export function RelatedProductsCarousel({
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : isAdded
                         ? 'bg-green-600 text-white'
-                        : 'bg-rose-50 hover:bg-rose-100 text-[#800f2f] active:scale-95'
+                        : `${theme.button} active:scale-95`
                     }`}
                   >
                     {isAdded ? (
                       <>
-                        <Check className="w-3 h-3" />
+                        <Check className="w-3.5 h-3.5" />
                         <span>Added</span>
                       </>
                     ) : (
                       <>
-                        <ShoppingBag className="w-3 h-3" />
+                        <ShoppingBag className="w-3.5 h-3.5" />
                         <span>Add</span>
                       </>
                     )}

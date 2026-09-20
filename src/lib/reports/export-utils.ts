@@ -1,6 +1,6 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 export interface PdfReportOptions {
   fileName: string;
@@ -10,8 +10,11 @@ export interface PdfReportOptions {
   summaryCards?: { label: string; value: string | number }[];
   head: string[][];
   body: (string | number)[][];
-  columnStyles?: Record<number, { halign?: 'left' | 'center' | 'right'; cellWidth?: number | 'auto' }>;
-  orientation?: 'portrait' | 'landscape';
+  columnStyles?: Record<
+    number,
+    { halign?: "left" | "center" | "right"; cellWidth?: number | "auto" }
+  >;
+  orientation?: "portrait" | "landscape";
 }
 
 export interface ExcelReportOptions {
@@ -36,13 +39,13 @@ export function exportToPdf(options: PdfReportOptions) {
     head,
     body,
     columnStyles = {},
-    orientation = 'portrait',
+    orientation = "portrait",
   } = options;
 
   const doc = new jsPDF({
     orientation,
-    unit: 'mm',
-    format: 'a4',
+    unit: "mm",
+    format: "a4",
   });
 
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -52,42 +55,44 @@ export function exportToPdf(options: PdfReportOptions) {
 
   // 1. Brand Header Band
   doc.setFillColor(89, 13, 34); // #590d22
-  doc.rect(0, 0, pageWidth, 4, 'F');
+  doc.rect(0, 0, pageWidth, 4, "F");
 
   // 2. Company Name
-  doc.setFont('helvetica', 'bold');
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(89, 13, 34); // #590d22
-  doc.text('BAJAJ KARYAN STORE', marginX, cursorY);
+  doc.text("BAJAJ karyana STORE", marginX, cursorY);
 
   // Print timestamp on top right
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+  const dateStr = now.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
-  const timeStr = now.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
+  const timeStr = now.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
-  doc.text(`Generated: ${dateStr}, ${timeStr}`, pageWidth - marginX, cursorY, { align: 'right' });
+  doc.text(`Generated: ${dateStr}, ${timeStr}`, pageWidth - marginX, cursorY, {
+    align: "right",
+  });
 
   cursorY += 6;
 
   // 3. Report Title & Subtitle
-  doc.setFont('helvetica', 'bold');
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.setTextColor(128, 15, 47); // #800f2f
   doc.text(title.toUpperCase(), marginX, cursorY);
 
   if (subtitle) {
     cursorY += 4.5;
-    doc.setFont('helvetica', 'normal');
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(90, 90, 90);
     doc.text(subtitle, marginX, cursorY);
@@ -97,8 +102,10 @@ export function exportToPdf(options: PdfReportOptions) {
 
   // 4. Metadata Details (filters, total records)
   if (metaInfo.length > 0) {
-    const metaString = metaInfo.map((m) => `${m.label}: ${m.value}`).join('  |  ');
-    doc.setFont('helvetica', 'italic');
+    const metaString = metaInfo
+      .map((m) => `${m.label}: ${m.value}`)
+      .join("  |  ");
+    doc.setFont("helvetica", "italic");
     doc.setFontSize(8);
     doc.setTextColor(110, 110, 110);
     doc.text(metaString, marginX, cursorY);
@@ -110,7 +117,9 @@ export function exportToPdf(options: PdfReportOptions) {
     cursorY += 2;
     const cardGap = 4;
     const totalCardsWidth = pageWidth - marginX * 2;
-    const cardWidth = (totalCardsWidth - (summaryCards.length - 1) * cardGap) / summaryCards.length;
+    const cardWidth =
+      (totalCardsWidth - (summaryCards.length - 1) * cardGap) /
+      summaryCards.length;
     const cardHeight = 13;
 
     summaryCards.forEach((card, idx) => {
@@ -118,16 +127,16 @@ export function exportToPdf(options: PdfReportOptions) {
       // Card background
       doc.setFillColor(254, 242, 244); // #fdf2f4
       doc.setDrawColor(244, 199, 208); // light border
-      doc.roundedRect(cardX, cursorY, cardWidth, cardHeight, 2, 2, 'FD');
+      doc.roundedRect(cardX, cursorY, cardWidth, cardHeight, 2, 2, "FD");
 
       // Label
-      doc.setFont('helvetica', 'normal');
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       doc.setTextColor(120, 80, 90);
       doc.text(card.label.toUpperCase(), cardX + 3, cursorY + 4.5);
 
       // Value
-      doc.setFont('helvetica', 'bold');
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(89, 13, 34);
       doc.text(String(card.value), cardX + 3, cursorY + 10);
@@ -144,13 +153,13 @@ export function exportToPdf(options: PdfReportOptions) {
     startY: cursorY,
     head,
     body,
-    theme: 'grid',
+    theme: "grid",
     headStyles: {
       fillColor: [128, 15, 47], // #800f2f
       textColor: [255, 255, 255],
-      fontStyle: 'bold',
+      fontStyle: "bold",
       fontSize: 8,
-      halign: 'left',
+      halign: "left",
       cellPadding: 2.2,
     },
     bodyStyles: {
@@ -164,7 +173,7 @@ export function exportToPdf(options: PdfReportOptions) {
     styles: {
       lineColor: [235, 215, 220],
       lineWidth: 0.15,
-      overflow: 'linebreak',
+      overflow: "linebreak",
     },
     columnStyles,
     margin: { left: marginX, right: marginX, bottom: 15 },
@@ -175,22 +184,24 @@ export function exportToPdf(options: PdfReportOptions) {
       doc.setLineWidth(0.2);
       doc.line(marginX, currentY - 2, pageWidth - marginX, currentY - 2);
 
-      doc.setFont('helvetica', 'normal');
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(7);
       doc.setTextColor(140, 140, 140);
       doc.text(
-        'Bajaj Karyan Store — Confidential Internal Business Report',
+        "Bajaj karyana Store — Confidential Internal Business Report",
         marginX,
-        currentY + 1.5
+        currentY + 1.5,
       );
 
       const pageNumStr = `Page ${data.pageNumber}`;
-      doc.text(pageNumStr, pageWidth - marginX, currentY + 1.5, { align: 'right' });
+      doc.text(pageNumStr, pageWidth - marginX, currentY + 1.5, {
+        align: "right",
+      });
     },
   });
 
   // Save the PDF
-  const safeFileName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+  const safeFileName = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
   doc.save(safeFileName);
 }
 
@@ -198,15 +209,22 @@ export function exportToPdf(options: PdfReportOptions) {
  * Generate and download an Excel (.xlsx) file using SheetJS
  */
 export function exportToExcel(options: ExcelReportOptions) {
-  const { fileName, sheetName = 'Report', title, metaInfo, headers, rows } = options;
+  const {
+    fileName,
+    sheetName = "Report",
+    title,
+    metaInfo,
+    headers,
+    rows,
+  } = options;
 
   // Build rows array with optional title and metadata block
   const sheetData: any[][] = [];
 
   if (title) {
-    sheetData.push(['BAJAJ KARYAN STORE']);
+    sheetData.push(["BAJAJ karyana STORE"]);
     sheetData.push([title.toUpperCase()]);
-    sheetData.push([`Generated on: ${new Date().toLocaleString('en-IN')}`]);
+    sheetData.push([`Generated on: ${new Date().toLocaleString("en-IN")}`]);
     if (metaInfo && metaInfo.length > 0) {
       sheetData.push(metaInfo.map((m) => `${m.label}: ${m.value}`));
     }
@@ -235,13 +253,15 @@ export function exportToExcel(options: ExcelReportOptions) {
     return { wch: Math.min(Math.max(maxLen + 3, 10), 50) };
   });
 
-  worksheet['!cols'] = colWidths;
+  worksheet["!cols"] = colWidths;
 
   // Create workbook and append sheet
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName.slice(0, 31)); // sheet name max 31 chars
 
   // Trigger download
-  const safeFileName = fileName.endsWith('.xlsx') ? fileName : `${fileName}.xlsx`;
+  const safeFileName = fileName.endsWith(".xlsx")
+    ? fileName
+    : `${fileName}.xlsx`;
   XLSX.writeFile(workbook, safeFileName);
 }

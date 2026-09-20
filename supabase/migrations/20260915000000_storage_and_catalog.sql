@@ -1,4 +1,4 @@
--- Bajaj Karyan Store — Storage Setup & Expanded Catalog Migration
+-- Bajaj karyana Store — Storage Setup & Expanded Catalog Migration
 -- Migration: 20260915000000_storage_and_catalog.sql
 
 -- 1. Create Public Storage Bucket 'store'

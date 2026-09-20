@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -17,8 +17,8 @@ import {
   X,
   Store,
   FileBarChart,
-} from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -26,20 +26,20 @@ export function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
-    { label: 'Products', href: '/admin/products', icon: Package },
-    { label: 'Categories', href: '/admin/categories', icon: Layers },
-    { label: 'Inventory', href: '/admin/inventory', icon: Boxes },
-    { label: 'Customers', href: '/admin/customers', icon: Users },
-    { label: 'Reports & Export', href: '/admin/reports', icon: FileBarChart },
-    { label: 'Store Settings', href: '/admin/settings', icon: Settings },
+    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
+    { label: "Products", href: "/admin/products", icon: Package },
+    { label: "Categories", href: "/admin/categories", icon: Layers },
+    { label: "Inventory", href: "/admin/inventory", icon: Boxes },
+    { label: "Customers", href: "/admin/customers", icon: Users },
+    { label: "Reports & Export", href: "/admin/reports", icon: FileBarChart },
+    { label: "Store Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/auth/login');
+    router.push("/auth/login");
   };
 
   const NavContent = () => (
@@ -52,7 +52,7 @@ export function AdminSidebar() {
           </div>
           <div>
             <span className="font-extrabold text-lg tracking-wider font-serif uppercase block leading-tight">
-              BAJAJ KARYAN
+              BAJAJ karyana
             </span>
             <span className="text-[10px] text-pink-300 uppercase tracking-widest font-semibold">
               Admin Portal
@@ -66,8 +66,8 @@ export function AdminSidebar() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            item.href === '/admin'
-              ? pathname === '/admin'
+            item.href === "/admin"
+              ? pathname === "/admin"
               : pathname.startsWith(item.href);
 
           return (
@@ -77,11 +77,13 @@ export function AdminSidebar() {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition ${
                 isActive
-                  ? 'bg-[#800f2f] text-white shadow-sm border border-pink-400/20'
-                  : 'text-rose-200/80 hover:bg-[#800f2f]/50 hover:text-white'
+                  ? "bg-[#800f2f] text-white shadow-sm border border-pink-400/20"
+                  : "text-rose-200/80 hover:bg-[#800f2f]/50 hover:text-white"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-pink-400' : 'text-rose-300'}`} />
+              <Icon
+                className={`w-4 h-4 ${isActive ? "text-pink-400" : "text-rose-300"}`}
+              />
               <span>{item.label}</span>
             </Link>
           );
@@ -124,7 +126,11 @@ export function AdminSidebar() {
           className="p-2 rounded-xl bg-[#590d22] text-white shadow-md"
           aria-label="Toggle admin sidebar"
         >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {mobileOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <Menu className="w-5 h-5" />
+          )}
         </button>
       </div>
 

@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
-import { Store, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import {
+  Store,
+  Mail,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -28,7 +34,7 @@ export default function ForgotPasswordPage() {
         setSubmitted(true);
       }
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Failed to send password reset email.');
+      setErrorMsg(err?.message || "Failed to send password reset email.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +48,7 @@ export default function ForgotPasswordPage() {
             <Store className="w-7 h-7 text-pink-300" />
           </div>
           <span className="font-extrabold text-2xl font-serif text-[#590d22] uppercase tracking-wider">
-            BAJAJ KARYAN STORE
+            BAJAJ karyana STORE
           </span>
         </Link>
       </div>
@@ -52,7 +58,8 @@ export default function ForgotPasswordPage() {
           <div>
             <h2 className="text-xl font-bold text-gray-900">Reset Password</h2>
             <p className="text-xs text-gray-500 mt-1">
-              Enter your registered email and we will send you a password reset link.
+              Enter your registered email and we will send you a password reset
+              link.
             </p>
           </div>
 
@@ -69,7 +76,9 @@ export default function ForgotPasswordPage() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <p className="text-sm text-gray-700">
-                If an account exists for <strong className="text-gray-900">{email}</strong>, you will receive a reset link shortly.
+                If an account exists for{" "}
+                <strong className="text-gray-900">{email}</strong>, you will
+                receive a reset link shortly.
               </p>
               <Link
                 href="/auth/login"
@@ -102,7 +111,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="w-full bg-[#800f2f] hover:bg-[#a4133c] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-md transition disabled:bg-gray-300"
               >
-                {loading ? 'Sending link...' : 'Send Reset Link'}
+                {loading ? "Sending link..." : "Send Reset Link"}
               </button>
 
               <div className="pt-2 text-center">

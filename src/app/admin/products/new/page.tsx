@@ -1,6 +1,6 @@
-import React from 'react';
-import { getCategories } from '@/services/store-service';
-import { ProductForm } from '../ProductForm';
+import React from "react";
+import { getCategories } from "@/services/store-service";
+import { ProductForm } from "../ProductForm";
 
 export default async function NewProductPage() {
   const categories = await getCategories();
@@ -12,7 +12,8 @@ export default async function NewProductPage() {
           Add New Product
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 mt-1">
-          Add an item to the Bajaj Karyan Store inventory with flexible units and pricing.
+          Add an item to the Bajaj karyana Store inventory with flexible units
+          and pricing.
         </p>
       </div>
 

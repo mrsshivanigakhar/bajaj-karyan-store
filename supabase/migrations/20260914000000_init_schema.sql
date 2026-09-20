@@ -1,4 +1,4 @@
--- Bajaj Karyan Store — Initial Schema & RLS Setup
+-- Bajaj karyana Store — Initial Schema & RLS Setup
 -- Migration: 20260914000000_init_schema.sql
 
 -- Enable pgcrypto for UUIDs
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
 -- 6. Store Settings Table
 CREATE TABLE IF NOT EXISTS public.store_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    store_name TEXT NOT NULL DEFAULT 'Bajaj Karyan Store',
+    store_name TEXT NOT NULL DEFAULT 'Bajaj karyana Store',
     phone TEXT DEFAULT '+91 98765 43210',
     email TEXT DEFAULT 'contact@bajajkaryan.com',
     address TEXT DEFAULT 'Main Bazaar, Near Clock Tower',
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
     pincode TEXT DEFAULT '143001',
     opening_hours TEXT DEFAULT 'Mon - Sat: 8:00 AM - 9:00 PM | Sun: 9:00 AM - 6:00 PM',
     delivery_info TEXT DEFAULT 'Free local delivery on orders above ₹500',
-    footer_text TEXT DEFAULT 'Bajaj Karyan Store — Quality Groceries & Confectionery Since 1998',
+    footer_text TEXT DEFAULT 'Bajaj karyana Store — Quality Groceries & Confectionery Since 1987',
     low_stock_threshold NUMERIC(10, 2) NOT NULL DEFAULT 10,
     default_delivery_charge NUMERIC(10, 2) NOT NULL DEFAULT 30,
     order_prefix TEXT NOT NULL DEFAULT 'BKS',

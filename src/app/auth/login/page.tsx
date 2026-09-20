@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, Suspense } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { Store, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import React, { useState, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Store, Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/';
+  const redirectPath = searchParams.get("redirect") || "/";
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -33,20 +33,20 @@ function LoginForm() {
       } else if (data.user) {
         // Check if admin to redirect accordingly
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
           .single();
 
-        if (profile?.role === 'admin' && redirectPath === '/') {
-          router.push('/admin');
+        if (profile?.role === "admin" && redirectPath === "/") {
+          router.push("/admin");
         } else {
           router.push(redirectPath);
         }
         router.refresh();
       }
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Unable to sign in. Please try again.');
+      setErrorMsg(err?.message || "Unable to sign in. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,9 @@ function LoginForm() {
   return (
     <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-rose-100 shadow-sm space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Sign in to your account</h2>
+        <h2 className="text-xl font-bold text-gray-900">
+          Sign in to your account
+        </h2>
         <p className="text-xs text-gray-500 mt-1">
           Access your shopping list, past orders, and profile.
         </p>
@@ -128,8 +130,11 @@ function LoginForm() {
       </form>
 
       <div className="pt-4 border-t border-rose-100 text-center text-xs text-gray-600">
-        Don't have an account yet?{' '}
-        <Link href="/auth/register" className="font-bold text-[#800f2f] hover:underline">
+        Don't have an account yet?{" "}
+        <Link
+          href="/auth/register"
+          className="font-bold text-[#800f2f] hover:underline"
+        >
           Create customer account
         </Link>
       </div>
@@ -146,7 +151,7 @@ export default function LoginPage() {
             <Store className="w-7 h-7 text-pink-300" />
           </div>
           <span className="font-extrabold text-2xl font-serif text-[#590d22] uppercase tracking-wider">
-            BAJAJ KARYAN STORE
+            BAJAJ karyana STORE
           </span>
           <span className="text-xs text-rose-800 uppercase tracking-widest -mt-0.5">
             Customer & Admin Portal
@@ -155,7 +160,13 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Suspense fallback={<div className="bg-white p-8 rounded-3xl text-center text-sm text-gray-500">Loading sign-in...</div>}>
+        <Suspense
+          fallback={
+            <div className="bg-white p-8 rounded-3xl text-center text-sm text-gray-500">
+              Loading sign-in...
+            </div>
+          }
+        >
           <LoginForm />
         </Suspense>
       </div>

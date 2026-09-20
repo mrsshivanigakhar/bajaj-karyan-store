@@ -1,12 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
-import { User, Phone, MapPin, Mail, LogOut, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import {
+  User,
+  Phone,
+  MapPin,
+  Mail,
+  LogOut,
+  Shield,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -21,36 +30,38 @@ export default function ProfilePage() {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) {
-        router.push('/auth/login?redirect=/account/profile');
+        router.push("/auth/login?redirect=/account/profile");
         return;
       }
       setUser(user);
 
       const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
       if (data) {
         setProfile(data);
       } else {
         setProfile({
-          full_name: user.user_metadata?.full_name || '',
-          phone: user.user_metadata?.phone || '',
+          full_name: user.user_metadata?.full_name || "",
+          phone: user.user_metadata?.phone || "",
           email: user.email,
-          role: 'customer',
-          address: '',
-          city: 'Firozpur',
-          state: 'Punjab',
-          pincode: '152002',
+          role: "customer",
+          address: "",
+          city: "Firozpur",
+          state: "Punjab",
+          pincode: "152002",
         });
       }
       setLoading(false);
     });
   }, [router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setProfile((prev: any) => ({ ...prev, [name]: value }));
   };
@@ -65,26 +76,24 @@ export default function ProfilePage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: profile.full_name,
-          phone: profile.phone,
-          address: profile.address,
-          city: profile.city,
-          state: profile.state,
-          pincode: profile.pincode,
-          updated_at: new Date().toISOString(),
-        });
+      const { error } = await supabase.from("profiles").upsert({
+        id: user.id,
+        full_name: profile.full_name,
+        phone: profile.phone,
+        address: profile.address,
+        city: profile.city,
+        state: profile.state,
+        pincode: profile.pincode,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         setErrorMsg(error.message);
       } else {
-        setSuccessMsg('Profile details updated successfully!');
+        setSuccessMsg("Profile details updated successfully!");
       }
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Failed to update profile.');
+      setErrorMsg(err?.message || "Failed to update profile.");
     } finally {
       setSaving(false);
     }
@@ -93,7 +102,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/');
+    router.push("/");
     router.refresh();
   };
 
@@ -134,11 +143,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Role highlight if Admin */}
-        {profile?.role === 'admin' && (
+        {profile?.role === "admin" && (
           <div className="bg-purple-50 border border-purple-200 p-4 rounded-2xl flex items-center justify-between">
             <div className="flex items-center gap-2 text-purple-900 text-sm font-semibold">
               <Shield className="w-5 h-5 text-purple-700" />
-              <span>You have Administrator access for Bajaj Karyan Store</span>
+              <span>You have Administrator access for Bajaj karyana Store</span>
             </div>
             <Link
               href="/admin"
@@ -174,7 +183,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="full_name"
-                  value={profile?.full_name || ''}
+                  value={profile?.full_name || ""}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />
@@ -187,7 +196,7 @@ export default function ProfilePage() {
                 <input
                   type="tel"
                   name="phone"
-                  value={profile?.phone || ''}
+                  value={profile?.phone || ""}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />
@@ -201,7 +210,7 @@ export default function ProfilePage() {
               <input
                 type="email"
                 disabled
-                value={user?.email || ''}
+                value={user?.email || ""}
                 className="w-full text-sm p-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
               />
             </div>
@@ -213,7 +222,7 @@ export default function ProfilePage() {
               <textarea
                 name="address"
                 rows={2}
-                value={profile?.address || ''}
+                value={profile?.address || ""}
                 onChange={handleChange}
                 placeholder="House no., Street, Area..."
                 className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
@@ -228,7 +237,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="city"
-                  value={profile?.city || 'Firozpur'}
+                  value={profile?.city || "Firozpur"}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />
@@ -241,7 +250,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="state"
-                  value={profile?.state || 'Punjab'}
+                  value={profile?.state || "Punjab"}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />
@@ -255,7 +264,7 @@ export default function ProfilePage() {
                   type="text"
                   name="pincode"
                   maxLength={6}
-                  value={profile?.pincode || '143001'}
+                  value={profile?.pincode || "143001"}
                   onChange={handleChange}
                   className="w-full text-sm p-3 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-[#800f2f] text-gray-800"
                 />
@@ -267,7 +276,7 @@ export default function ProfilePage() {
               disabled={saving}
               className="bg-[#800f2f] hover:bg-[#a4133c] text-white px-7 py-3 rounded-xl font-bold text-sm shadow-sm transition"
             >
-              {saving ? 'Saving changes...' : 'Save Profile Details'}
+              {saving ? "Saving changes..." : "Save Profile Details"}
             </button>
           </form>
         </div>

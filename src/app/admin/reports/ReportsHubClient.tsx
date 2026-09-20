@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Product, Category, Order } from '@/types/database';
+import React, { useState } from "react";
+import { Product, Category, Order } from "@/types/database";
 import {
   FileText,
   FileSpreadsheet,
@@ -15,15 +15,15 @@ import {
   CheckCircle2,
   Sparkles,
   ArrowRight,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   generateProductsReport,
   generateCategoriesReport,
   generateOrdersReport,
   generateInventoryReport,
   generateCustomersReport,
-} from '@/lib/reports/report-generators';
-import * as XLSX from 'xlsx';
+} from "@/lib/reports/report-generators";
+import * as XLSX from "xlsx";
 
 interface ReportsHubClientProps {
   products: Product[];
@@ -50,19 +50,19 @@ export function ReportsHubClient({
 
   const totalRevenue = orders.reduce((sum, o) => sum + (o.final_total || 0), 0);
   const lowStockCount = products.filter(
-    (p) => p.stock_quantity > 0 && p.stock_quantity <= lowStockThreshold
+    (p) => p.stock_quantity > 0 && p.stock_quantity <= lowStockThreshold,
   ).length;
   const outOfStockCount = products.filter((p) => p.stock_quantity <= 0).length;
 
   const handleDownload = async (
     key: string,
-    generator: () => void | Promise<void>
+    generator: () => void | Promise<void>,
   ) => {
     setDownloading(key);
     try {
       await generator();
     } catch (err) {
-      console.error('Error generating report:', err);
+      console.error("Error generating report:", err);
     } finally {
       setTimeout(() => setDownloading(null), 1000);
     }
@@ -70,52 +70,63 @@ export function ReportsHubClient({
 
   // Master Comprehensive Multi-Sheet Excel Workbook Export
   const exportMasterExcelWorkbook = () => {
-    const dateTag = new Date().toISOString().split('T')[0];
+    const dateTag = new Date().toISOString().split("T")[0];
     const wb = XLSX.utils.book_new();
 
     // 1. Overview Sheet
     const overviewData = [
-      ['BAJAJ KARYAN STORE — MASTER STORE AUDIT REPORT'],
-      [`Generated: ${new Date().toLocaleString('en-IN')}`],
+      ["BAJAJ karyana STORE — MASTER STORE AUDIT REPORT"],
+      [`Generated: ${new Date().toLocaleString("en-IN")}`],
       [],
-      ['Metric', 'Value'],
-      ['Total Products', products.length],
-      ['Total Inventory Valuation', `₹${totalValuation.toLocaleString('en-IN')}`],
-      ['Low Stock Warnings', lowStockCount],
-      ['Out of Stock Items', outOfStockCount],
-      ['Total Categories', categories.length],
-      ['Total Orders', orders.length],
-      ['Total Sales Revenue', `₹${totalRevenue.toLocaleString('en-IN')}`],
-      ['Total Registered Customers', customers.length],
+      ["Metric", "Value"],
+      ["Total Products", products.length],
+      [
+        "Total Inventory Valuation",
+        `₹${totalValuation.toLocaleString("en-IN")}`,
+      ],
+      ["Low Stock Warnings", lowStockCount],
+      ["Out of Stock Items", outOfStockCount],
+      ["Total Categories", categories.length],
+      ["Total Orders", orders.length],
+      ["Total Sales Revenue", `₹${totalRevenue.toLocaleString("en-IN")}`],
+      ["Total Registered Customers", customers.length],
     ];
     const wsOverview = XLSX.utils.aoa_to_sheet(overviewData);
-    wsOverview['!cols'] = [{ wch: 30 }, { wch: 35 }];
-    XLSX.utils.book_append_sheet(wb, wsOverview, 'Store Overview');
+    wsOverview["!cols"] = [{ wch: 30 }, { wch: 35 }];
+    XLSX.utils.book_append_sheet(wb, wsOverview, "Store Overview");
 
     // 2. Products Sheet
     const productHeaders = [
-      '#',
-      'Name',
-      'Category',
-      'SKU',
-      'Unit',
-      'Price (INR)',
-      'Stock',
-      'Status',
+      "#",
+      "Name",
+      "Category",
+      "SKU",
+      "Unit",
+      "Price (INR)",
+      "Stock",
+      "Status",
     ];
     const categoryMap = new Map(categories.map((c) => [c.id, c.name]));
     const productRows = products.map((p, i) => [
       i + 1,
       p.name,
-      p.category?.name || (p.category_id ? categoryMap.get(p.category_id) : 'Uncategorized'),
-      p.sku || '-',
+      p.category?.name ||
+        (p.category_id ? categoryMap.get(p.category_id) : "Uncategorized"),
+      p.sku || "-",
       `${p.unit_value} ${p.unit_type}`,
-      p.price ?? 'On Request',
+      p.price ?? "On Request",
       p.stock_quantity,
-      p.stock_quantity <= 0 ? 'Out of Stock' : p.stock_quantity <= 10 ? 'Low Stock' : 'In Stock',
+      p.stock_quantity <= 0
+        ? "Out of Stock"
+        : p.stock_quantity <= 10
+          ? "Low Stock"
+          : "In Stock",
     ]);
-    const wsProducts = XLSX.utils.aoa_to_sheet([productHeaders, ...productRows]);
-    wsProducts['!cols'] = [
+    const wsProducts = XLSX.utils.aoa_to_sheet([
+      productHeaders,
+      ...productRows,
+    ]);
+    wsProducts["!cols"] = [
       { wch: 6 },
       { wch: 40 },
       { wch: 25 },
@@ -125,20 +136,20 @@ export function ReportsHubClient({
       { wch: 12 },
       { wch: 15 },
     ];
-    XLSX.utils.book_append_sheet(wb, wsProducts, 'Products');
+    XLSX.utils.book_append_sheet(wb, wsProducts, "Products");
 
     // 3. Categories Sheet
-    const catHeaders = ['#', 'Name', 'Slug', 'Order', 'Active', 'Description'];
+    const catHeaders = ["#", "Name", "Slug", "Order", "Active", "Description"];
     const catRows = categories.map((c, i) => [
       i + 1,
       c.name,
       c.slug,
       c.sort_order,
-      c.is_active ? 'Active' : 'Inactive',
-      c.description || '',
+      c.is_active ? "Active" : "Inactive",
+      c.description || "",
     ]);
     const wsCategories = XLSX.utils.aoa_to_sheet([catHeaders, ...catRows]);
-    wsCategories['!cols'] = [
+    wsCategories["!cols"] = [
       { wch: 6 },
       { wch: 30 },
       { wch: 25 },
@@ -146,21 +157,21 @@ export function ReportsHubClient({
       { wch: 12 },
       { wch: 45 },
     ];
-    XLSX.utils.book_append_sheet(wb, wsCategories, 'Categories');
+    XLSX.utils.book_append_sheet(wb, wsCategories, "Categories");
 
     // 4. Orders Sheet
     const orderHeaders = [
-      'Order #',
-      'Date',
-      'Customer',
-      'Phone',
-      'Status',
-      'Payment Status',
-      'Total (INR)',
+      "Order #",
+      "Date",
+      "Customer",
+      "Phone",
+      "Status",
+      "Payment Status",
+      "Total (INR)",
     ];
     const orderRows = orders.map((o) => [
       o.order_number,
-      new Date(o.created_at).toLocaleDateString('en-IN'),
+      new Date(o.created_at).toLocaleDateString("en-IN"),
       o.customer_name,
       o.customer_phone,
       o.status.toUpperCase(),
@@ -168,7 +179,7 @@ export function ReportsHubClient({
       o.final_total || 0,
     ]);
     const wsOrders = XLSX.utils.aoa_to_sheet([orderHeaders, ...orderRows]);
-    wsOrders['!cols'] = [
+    wsOrders["!cols"] = [
       { wch: 25 },
       { wch: 15 },
       { wch: 30 },
@@ -177,25 +188,36 @@ export function ReportsHubClient({
       { wch: 18 },
       { wch: 18 },
     ];
-    XLSX.utils.book_append_sheet(wb, wsOrders, 'Orders');
+    XLSX.utils.book_append_sheet(wb, wsOrders, "Orders");
 
     // 5. Customers Sheet
-    const custHeaders = ['#', 'Name', 'Email', 'Phone', 'City', 'Total Orders', 'Total Spent (INR)'];
+    const custHeaders = [
+      "#",
+      "Name",
+      "Email",
+      "Phone",
+      "City",
+      "Total Orders",
+      "Total Spent (INR)",
+    ];
     const custRows = customers.map((c, i) => {
       const oList = c.orders || [];
-      const spend = oList.reduce((sum: number, o: any) => sum + (o.final_total || 0), 0);
+      const spend = oList.reduce(
+        (sum: number, o: any) => sum + (o.final_total || 0),
+        0,
+      );
       return [
         i + 1,
-        c.full_name || 'Anonymous',
-        c.email || '-',
-        c.phone || '-',
-        c.city || c.address || '-',
+        c.full_name || "Anonymous",
+        c.email || "-",
+        c.phone || "-",
+        c.city || c.address || "-",
         oList.length,
         spend,
       ];
     });
     const wsCustomers = XLSX.utils.aoa_to_sheet([custHeaders, ...custRows]);
-    wsCustomers['!cols'] = [
+    wsCustomers["!cols"] = [
       { wch: 6 },
       { wch: 30 },
       { wch: 35 },
@@ -204,71 +226,72 @@ export function ReportsHubClient({
       { wch: 15 },
       { wch: 20 },
     ];
-    XLSX.utils.book_append_sheet(wb, wsCustomers, 'Customers');
+    XLSX.utils.book_append_sheet(wb, wsCustomers, "Customers");
 
     XLSX.writeFile(wb, `BajajKaryan_Master_Store_Audit_${dateTag}.xlsx`);
   };
 
   const reportCards = [
     {
-      id: 'products',
-      title: 'Products Catalog Report',
+      id: "products",
+      title: "Products Catalog Report",
       description:
-        'Complete inventory records, units, prices, active status, and store catalog metadata.',
+        "Complete inventory records, units, prices, active status, and store catalog metadata.",
       icon: Package,
       countLabel: `${products.length} Products`,
-      badge: `₹${totalValuation.toLocaleString('en-IN')} Stock Value`,
-      color: 'rose',
-      onPdf: () => generateProductsReport(products, categories, 'pdf'),
-      onExcel: () => generateProductsReport(products, categories, 'excel'),
+      badge: `₹${totalValuation.toLocaleString("en-IN")} Stock Value`,
+      color: "rose",
+      onPdf: () => generateProductsReport(products, categories, "pdf"),
+      onExcel: () => generateProductsReport(products, categories, "excel"),
     },
     {
-      id: 'inventory',
-      title: 'Warehouse Inventory & Stock Valuation',
+      id: "inventory",
+      title: "Warehouse Inventory & Stock Valuation",
       description:
-        'Stock balance, minimum alert thresholds, reorder warnings, and inventory asset values.',
+        "Stock balance, minimum alert thresholds, reorder warnings, and inventory asset values.",
       icon: Boxes,
       countLabel: `${products.length} Tracked Items`,
       badge: `${lowStockCount} Low Stock Alert`,
-      color: 'amber',
-      onPdf: () => generateInventoryReport(products, lowStockThreshold, 'pdf'),
-      onExcel: () => generateInventoryReport(products, lowStockThreshold, 'excel'),
+      color: "amber",
+      onPdf: () => generateInventoryReport(products, lowStockThreshold, "pdf"),
+      onExcel: () =>
+        generateInventoryReport(products, lowStockThreshold, "excel"),
     },
     {
-      id: 'orders',
-      title: 'Orders & Sales Revenue Report',
+      id: "orders",
+      title: "Orders & Sales Revenue Report",
       description:
-        'Fulfillment tracking, delivery logs, payment methods, customer phone numbers, and revenue totals.',
+        "Fulfillment tracking, delivery logs, payment methods, customer phone numbers, and revenue totals.",
       icon: ShoppingBag,
       countLabel: `${orders.length} Orders`,
-      badge: `₹${totalRevenue.toLocaleString('en-IN')} Revenue`,
-      color: 'emerald',
-      onPdf: () => generateOrdersReport(orders, 'pdf'),
-      onExcel: () => generateOrdersReport(orders, 'excel'),
+      badge: `₹${totalRevenue.toLocaleString("en-IN")} Revenue`,
+      color: "emerald",
+      onPdf: () => generateOrdersReport(orders, "pdf"),
+      onExcel: () => generateOrdersReport(orders, "excel"),
     },
     {
-      id: 'categories',
-      title: 'Categories & Taxonomy Report',
+      id: "categories",
+      title: "Categories & Taxonomy Report",
       description:
-        'Category names, slugs, storefront display sort order, and active customer-facing status.',
+        "Category names, slugs, storefront display sort order, and active customer-facing status.",
       icon: Layers,
       countLabel: `${categories.length} Categories`,
       badge: `${categories.filter((c) => c.is_active).length} Active`,
-      color: 'purple',
-      onPdf: () => generateCategoriesReport(categories, 'pdf'),
-      onExcel: () => generateCategoriesReport(categories, 'excel'),
+      color: "purple",
+      onPdf: () => generateCategoriesReport(categories, "pdf"),
+      onExcel: () => generateCategoriesReport(categories, "excel"),
     },
     {
-      id: 'customers',
-      title: 'Customer Directory & Accounts Report',
+      id: "customers",
+      title: "Customer Directory & Accounts Report",
       description:
-        'Registered customer accounts, contact details, delivery addresses, and lifetime customer value.',
+        "Registered customer accounts, contact details, delivery addresses, and lifetime customer value.",
       icon: Users,
       countLabel: `${customers.length} Profiles`,
-      badge: 'Account Activity',
-      color: 'blue',
-      onPdf: () => generateCustomersReport(customers, 'pdf'),
-      onExcel: () => generateCustomersReport(customers, 'excel'),
+      badge: "Account Activity",
+      color: "blue",
+      onPdf: () => generateCustomersReport(customers, "pdf"),
+      onExcel: () => generateCustomersReport(customers, "excel"),
     },
   ];
 
@@ -285,19 +308,21 @@ export function ReportsHubClient({
             Export Business Intelligence Reports
           </h3>
           <p className="text-xs sm:text-sm text-pink-100/90 mt-2 leading-relaxed">
-            Generate pixel-perfect PDF documents with official Bajaj Karyan Store branding or
-            download high-precision Excel (.xlsx) spreadsheets formatted for accounting and
-            inventory auditing.
+            Generate pixel-perfect PDF documents with official Bajaj karyana
+            Store branding or download high-precision Excel (.xlsx) spreadsheets
+            formatted for accounting and inventory auditing.
           </p>
 
           <div className="mt-5 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => handleDownload('master-excel', exportMasterExcelWorkbook)}
+              onClick={() =>
+                handleDownload("master-excel", exportMasterExcelWorkbook)
+              }
               disabled={downloading !== null}
               className="inline-flex items-center gap-2 bg-white text-[#590d22] hover:bg-rose-50 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition disabled:opacity-50"
             >
-              {downloading === 'master-excel' ? (
+              {downloading === "master-excel" ? (
                 <Loader2 className="w-4 h-4 animate-spin text-[#800f2f]" />
               ) : (
                 <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
@@ -338,8 +363,12 @@ export function ReportsHubClient({
                   </div>
                 </div>
 
-                <h4 className="text-base font-bold text-[#590d22]">{card.title}</h4>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{card.description}</p>
+                <h4 className="text-base font-bold text-[#590d22]">
+                  {card.title}
+                </h4>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                  {card.description}
+                </p>
               </div>
 
               {/* Action Buttons */}
@@ -355,12 +384,14 @@ export function ReportsHubClient({
                   ) : (
                     <FileText className="w-4 h-4 text-rose-700" />
                   )}
-                  <span>{isPdfBusy ? 'Generating...' : 'Download PDF'}</span>
+                  <span>{isPdfBusy ? "Generating..." : "Download PDF"}</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleDownload(`${card.id}-excel`, card.onExcel)}
+                  onClick={() =>
+                    handleDownload(`${card.id}-excel`, card.onExcel)
+                  }
                   disabled={downloading !== null}
                   className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-800 font-bold text-xs transition disabled:opacity-50"
                 >
@@ -369,7 +400,7 @@ export function ReportsHubClient({
                   ) : (
                     <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
                   )}
-                  <span>{isExcelBusy ? 'Exporting...' : 'Download Excel'}</span>
+                  <span>{isExcelBusy ? "Exporting..." : "Download Excel"}</span>
                 </button>
               </div>
             </div>

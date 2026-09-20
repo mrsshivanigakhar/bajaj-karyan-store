@@ -1,11 +1,19 @@
-import React from 'react';
-import Link from 'next/link';
-import { RotateCcw, CheckCircle2, AlertCircle, HelpCircle, Phone, PackageCheck } from 'lucide-react';
-import { getStoreSettings } from '@/services/store-service';
+import React from "react";
+import Link from "next/link";
+import {
+  RotateCcw,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
+  Phone,
+  PackageCheck,
+} from "lucide-react";
+import { getStoreSettings } from "@/services/store-service";
 
 export const metadata = {
-  title: 'Refund & Return Policy — Bajaj Karyan Store',
-  description: 'Understand the return, refund, and doorstep verification policy of Bajaj Karyan Store Firozpur.',
+  title: "Refund & Return Policy — Bajaj karyana Store",
+  description:
+    "Understand the return, refund, and doorstep verification policy of Bajaj karyana Store Firozpur.",
 };
 
 export default async function RefundPolicyPage() {
@@ -23,7 +31,9 @@ export default async function RefundPolicyPage() {
           Refund & Return Policy
         </h1>
         <p className="text-xs text-gray-500">
-          Last updated: September 2026 • {settings.store_name || 'Bajaj Karyan Store'}, {settings.city || 'Firozpur'}
+          Last updated: September 2026 •{" "}
+          {settings.store_name || "Bajaj karyana Store"},{" "}
+          {settings.city || "Firozpur"}
         </p>
       </div>
 
@@ -36,7 +46,11 @@ export default async function RefundPolicyPage() {
             <span>Our 100% Doorstep Verification Guarantee</span>
           </div>
           <p className="text-sm text-emerald-900/90 leading-relaxed">
-            At {settings.store_name || 'Bajaj Karyan Store'}, we believe in complete transparency. When our delivery partner arrives, you are warmly invited to inspect every package, packet, and weighed item before paying. If any item is not up to your expectation, simply hand it back on the spot with zero questions asked!
+            At {settings.store_name || "Bajaj karyana Store"}, we believe in
+            complete transparency. When our delivery partner arrives, you are
+            warmly invited to inspect every package, packet, and weighed item
+            before paying. If any item is not up to your expectation, simply
+            hand it back on the spot with zero questions asked!
           </p>
         </section>
 
@@ -46,11 +60,18 @@ export default async function RefundPolicyPage() {
             1. Return Window for Packaged Goods
           </h2>
           <p>
-            For sealed manufacturer-packaged goods (such as biscuits, bottled oils, confectionery, detergents, and personal care products):
+            For sealed manufacturer-packaged goods (such as biscuits, bottled
+            oils, confectionery, detergents, and personal care products):
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-600">
-            <li>You may request a return or replacement within <strong>48 hours</strong> of delivery.</li>
-            <li>The item must be unused, unopened, and in its original manufacturer packaging with seals intact.</li>
+            <li>
+              You may request a return or replacement within{" "}
+              <strong>48 hours</strong> of delivery.
+            </li>
+            <li>
+              The item must be unused, unopened, and in its original
+              manufacturer packaging with seals intact.
+            </li>
             <li>The original store invoice receipt must be presented.</li>
           </ul>
         </section>
@@ -61,11 +82,20 @@ export default async function RefundPolicyPage() {
             2. Custom-Weighed Staples & Perishables
           </h2>
           <p>
-            For customized weight items (such as loose dals, whole spices, dry fruits, sugar, or fresh bakery/dairy items packed specifically to your requested quantity):
+            For customized weight items (such as loose dals, whole spices, dry
+            fruits, sugar, or fresh bakery/dairy items packed specifically to
+            your requested quantity):
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-600">
-            <li>These items should be inspected at the time of delivery verification.</li>
-            <li>If you discover any quality defect or weight discrepancy post-delivery, please notify us within <strong>24 hours</strong> so our store team can arrange an immediate replacement or refund.</li>
+            <li>
+              These items should be inspected at the time of delivery
+              verification.
+            </li>
+            <li>
+              If you discover any quality defect or weight discrepancy
+              post-delivery, please notify us within <strong>24 hours</strong>{" "}
+              so our store team can arrange an immediate replacement or refund.
+            </li>
           </ul>
         </section>
 
@@ -74,15 +104,18 @@ export default async function RefundPolicyPage() {
             <RotateCcw className="w-5 h-5 text-[#800f2f]" />
             3. How Refunds Are Processed
           </h2>
-          <p>
-            Since all orders operate under offline payment:
-          </p>
+          <p>Since all orders operate under offline payment:</p>
           <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-600">
             <li>
-              <strong>Doorstep Rejection:</strong> Your bill total is instantly adjusted before you make payment. You only pay for what you accept.
+              <strong>Doorstep Rejection:</strong> Your bill total is instantly
+              adjusted before you make payment. You only pay for what you
+              accept.
             </li>
             <li>
-              <strong>Post-Delivery Return:</strong> If a return is accepted after payment, our delivery executive will collect the item and provide a spot refund in <strong>Cash</strong> or via instant <strong>UPI transfer</strong> to your mobile number.
+              <strong>Post-Delivery Return:</strong> If a return is accepted
+              after payment, our delivery executive will collect the item and
+              provide a spot refund in <strong>Cash</strong> or via instant{" "}
+              <strong>UPI transfer</strong> to your mobile number.
             </li>
           </ul>
         </section>
@@ -93,14 +126,22 @@ export default async function RefundPolicyPage() {
             4. How to Request a Return
           </h2>
           <p>
-            To initiate a return or replacement, simply reach out to our store team with your Order Number:
+            To initiate a return or replacement, simply reach out to our store
+            team with your Order Number:
           </p>
           <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-sm space-y-1">
-            <p className="font-semibold text-gray-900">{settings.store_name || 'Bajaj Karyan Store'}</p>
-            {settings.phone && <p className="text-gray-600">Call / WhatsApp: {settings.phone}</p>}
-            {settings.email && <p className="text-gray-600">Email: {settings.email}</p>}
+            <p className="font-semibold text-gray-900">
+              {settings.store_name || "Bajaj karyana Store"}
+            </p>
+            {settings.phone && (
+              <p className="text-gray-600">Call / WhatsApp: {settings.phone}</p>
+            )}
+            {settings.email && (
+              <p className="text-gray-600">Email: {settings.email}</p>
+            )}
             <p className="text-xs text-gray-500 mt-2">
-              Store Timings: {settings.opening_hours || 'Mon - Sat: 8:00 AM - 9:30 PM'}
+              Store Timings:{" "}
+              {settings.opening_hours || "Mon - Sat: 8:00 AM - 9:30 PM"}
             </p>
           </div>
         </section>
@@ -110,7 +151,10 @@ export default async function RefundPolicyPage() {
         <Link href="/" className="text-[#800f2f] hover:underline font-semibold">
           ← Return to Home
         </Link>
-        <Link href="/price-change-policy" className="text-[#800f2f] hover:underline font-semibold">
+        <Link
+          href="/price-change-policy"
+          className="text-[#800f2f] hover:underline font-semibold"
+        >
           Read Price Change Policy →
         </Link>
       </div>

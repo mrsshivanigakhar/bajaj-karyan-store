@@ -1,4 +1,4 @@
--- Bajaj Karyan Store — Seed Data
+-- Bajaj karyana Store — Seed Data
 -- Migration: supabase/seed.sql
 
 -- 1. Store Settings (default row)
@@ -6,7 +6,7 @@ INSERT INTO public.store_settings (
     store_name, phone, email, address, city, state, pincode,
     opening_hours, delivery_info, footer_text, low_stock_threshold, default_delivery_charge, order_prefix
 ) VALUES (
-    'Bajaj Karyan Store',
+    'Bajaj karyana Store',
     '+91 98765 43210',
     'contact@bajajkaryan.com',
     'Shop No. 14, Main Market, Near Clock Tower',
@@ -15,7 +15,7 @@ INSERT INTO public.store_settings (
     '152002',
     'Mon - Sat: 8:00 AM - 9:30 PM | Sun: 9:00 AM - 7:00 PM',
     'Free doorstep delivery on orders above ₹500 across Firozpur',
-    'Bajaj Karyan Store — Premium Confectionery & Daily Kiryana Essentials Since 1998',
+    'Bajaj karyana Store — Premium Confectionery & Daily Kiryana Essentials Since 1987',
     10,
     30,
     'BKS'

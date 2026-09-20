@@ -15,15 +15,43 @@ export const registerSchema = z.object({
   pincode: z.string().optional(),
 });
 
+export const FIROZPUR_DELIVERY_PINCODES = [
+  '152001', // Firozpur Cantt
+  '152002', // Firozpur City / HO
+  '152003', // Basti Tankawali / Basti Bhattian
+  '152004', // Kulgarhi / Kasubegu
+  '152005', // Railway Colony / Basti Machian
+  '152024', // Ghal Khurd
+  '152028', // Mudki Border Area
+  '152116', // Khai Pheme Ki
+  '152117', // Bazidpur
+] as const;
+
+export function isDeliverableFirozpurPincode(pincode: string): boolean {
+  return (FIROZPUR_DELIVERY_PINCODES as readonly string[]).includes(pincode.trim());
+}
+
 export const checkoutSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
   phone: z.string().min(10, 'Valid 10-digit mobile number is required'),
   email: z.string().email('Valid email address is required').optional().or(z.literal('')),
   deliveryAddress: z.string().min(5, 'Delivery address is required'),
   landmark: z.string().optional(),
-  city: z.string().min(2, 'City is required'),
+  city: z.string().min(2, 'City is required').refine(
+    (val) => {
+      const lower = val.trim().toLowerCase();
+      return lower.includes('firozpur') || lower.includes('ferozepur') || lower.includes('cantt');
+    },
+    { message: 'We currently only accept orders from the Firozpur region (within 20km).' }
+  ),
   state: z.string().min(2, 'State is required'),
-  pincode: z.string().min(6, 'Valid 6-digit Pincode is required').max(6),
+  pincode: z.string().min(6, 'Valid 6-digit Pincode is required').max(6).refine(
+    (val) => isDeliverableFirozpurPincode(val),
+    {
+      message:
+        'Delivery is currently only available within a 20km radius of Firozpur (Pincodes: 152001, 152002, 152003, 152004, 152005, 152024, 152028, 152116, 152117).',
+    }
+  ),
   customerNotes: z.string().optional(),
 });
 

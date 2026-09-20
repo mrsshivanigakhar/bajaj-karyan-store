@@ -7,6 +7,8 @@ import { useShoppingList } from '@/context/shopping-list-context';
 import { formatCurrency, formatUnit } from '@/lib/utils';
 import { Heart, ShoppingBag, Trash2, ArrowRight, Package, Sparkles } from 'lucide-react';
 
+import { getProductTheme } from '@/lib/product-themes';
+
 export default function FavoritesPage() {
   const { favorites, removeFromFavorites, moveToCart, clearFavorites } = useFavorites();
   const { addItem, setIsDrawerOpen } = useShoppingList();
@@ -96,88 +98,92 @@ export default function FavoritesPage() {
       ) : (
         /* Favorites Grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {favorites.map((item) => (
-            <div
-              key={item.productId}
-              className="flex flex-col justify-between bg-white rounded-2xl border border-rose-100 overflow-hidden shadow-xs hover:shadow-md transition group"
-            >
-              {/* Product Top: Image & Remove */}
-              <div className="relative w-full aspect-square bg-rose-50/50 overflow-hidden">
-                <Link href={`/products/${item.slug}`} className="block w-full h-full">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-rose-300">
-                      <Package className="w-12 h-12" />
-                    </div>
-                  )}
-                </Link>
+          {favorites.map((item, idx) => {
+            const theme = getProductTheme(idx);
 
-                <button
-                  type="button"
-                  onClick={() => removeFromFavorites(item.productId)}
-                  aria-label="Remove from favorites"
-                  className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/90 hover:bg-red-50 text-gray-400 hover:text-red-600 shadow-xs transition"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
-                {item.categoryName && (
-                  <span className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-[#800f2f] text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs">
-                    {item.categoryName}
-                  </span>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4 flex flex-col flex-1 justify-between space-y-3">
-                <div>
-                  <Link href={`/products/${item.slug}`}>
-                    <h3 className="font-bold text-gray-900 group-hover:text-[#800f2f] transition text-sm sm:text-base line-clamp-2">
-                      {item.name}
-                    </h3>
+            return (
+              <div
+                key={item.productId}
+                className={`flex flex-col justify-between bg-white rounded-2xl border ${theme.border} overflow-hidden shadow-xs hover:shadow-md transition group`}
+              >
+                {/* Product Top: Image & Remove */}
+                <div className={`relative w-full aspect-square ${theme.imageBg} overflow-hidden`}>
+                  <Link href={`/products/${item.slug}`} className="block w-full h-full">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-rose-300">
+                        <Package className="w-12 h-12" />
+                      </div>
+                    )}
                   </Link>
 
-                  {/* Price */}
-                  <div className="mt-2">
-                    {item.price !== null ? (
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-base sm:text-lg font-extrabold text-[#590d22]">
-                          {formatCurrency(item.salePrice || item.price)}
-                        </span>
-                        {item.salePrice && (
-                          <span className="text-xs text-gray-400 line-through">
-                            {formatCurrency(item.price)}
-                          </span>
-                        )}
-                        <span className="text-xs text-gray-500 font-medium">
-                          / {formatUnit(item.unitType, item.unitValue)}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-xs font-bold text-[#800f2f]">
-                        Price on Request
-                      </span>
-                    )}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFromFavorites(item.productId)}
+                    aria-label="Remove from favorites"
+                    className="absolute top-2.5 right-2.5 p-2 rounded-full bg-white/90 hover:bg-red-50 text-gray-400 hover:text-red-600 shadow-xs transition"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+
+                  {item.categoryName && (
+                    <span className={`absolute bottom-2.5 left-2.5 ${theme.categoryTag} backdrop-blur-xs text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs`}>
+                      {item.categoryName}
+                    </span>
+                  )}
                 </div>
 
-                {/* Move to Cart Action Button */}
-                <button
-                  type="button"
-                  onClick={() => moveToCart(item.productId)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold bg-[#800f2f] hover:bg-[#a4133c] text-white transition shadow-xs active:scale-95"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Move to Shopping List</span>
-                </button>
+                {/* Product Info */}
+                <div className="p-4 flex flex-col flex-1 justify-between space-y-3">
+                  <div>
+                    <Link href={`/products/${item.slug}`}>
+                      <h3 className={`font-bold text-gray-900 ${theme.accentHover} transition text-sm sm:text-base line-clamp-2`}>
+                        {item.name}
+                      </h3>
+                    </Link>
+
+                    {/* Price */}
+                    <div className="mt-2">
+                      {item.price !== null ? (
+                        <div className="flex items-baseline gap-1.5">
+                          <span className={`text-base sm:text-lg font-extrabold ${theme.price}`}>
+                            {formatCurrency(item.salePrice || item.price)}
+                          </span>
+                          {item.salePrice && (
+                            <span className="text-xs text-gray-400 line-through">
+                              {formatCurrency(item.price)}
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-500 font-medium">
+                            / {formatUnit(item.unitType, item.unitValue)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className={`text-xs font-bold ${theme.price}`}>
+                          Price on Request
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Move to Cart Action Button */}
+                  <button
+                    type="button"
+                    onClick={() => moveToCart(item.productId)}
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold ${theme.button} transition shadow-xs active:scale-95`}
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Move to Shopping List</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

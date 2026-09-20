@@ -1,6 +1,6 @@
-# Bajaj Karyan Store — Full-Stack Confectionery & Grocery Ordering Platform
+# Bajaj karyana Store — Full-Stack Confectionery & Grocery Ordering Platform
 
-A modern, production-ready full-stack web application built for **Bajaj Karyan Store** (Firozpur, Punjab). Built with Next.js (App Router), TypeScript, Tailwind CSS, and Supabase.
+A modern, production-ready full-stack web application built for **Bajaj karyana Store** (Firozpur, Punjab). Built with Next.js (App Router), TypeScript, Tailwind CSS, and Supabase.
 
 ---
 
@@ -41,22 +41,28 @@ A modern, production-ready full-stack web application built for **Bajaj Karyan S
 ## 🚀 Getting Started Locally
 
 ### 1. Prerequisites
+
 - Node.js 18+ or 20+
 - npm, pnpm, or yarn
 - A free [Supabase](https://supabase.com/) project
 
 ### 2. Clone & Install Dependencies
+
 ```bash
 cd e:\bajajkaryanastore
 npm install
 ```
 
 ### 3. Configure Environment Variables
+
 Copy `.env.example` to `.env.local`:
+
 ```bash
 cp .env.example .env.local
 ```
+
 Fill in your Supabase credentials:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
@@ -65,15 +71,18 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ### 4. Apply Database Migrations & Seed Data
+
 1. Go to your **Supabase Dashboard** → **SQL Editor**.
 2. Run the script found in `supabase/migrations/20260914000000_init_schema.sql`.
    This creates all tables, functions, sequences, triggers, and RLS policies.
 3. (Optional) Run `supabase/seed.sql` to populate sample categories, products, and default store settings.
 
 ### 5. Run the Development Server
+
 ```bash
 npm run dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
@@ -113,6 +122,7 @@ auth.users
 ```
 
 ### Historical Order Immutability
+
 When an order is created, a product snapshot (`product_name`, `unit_type`, `unit_value`, `unit_price`, `line_total`) is copied into `order_items`. If an administrator later changes a product's price or description, past order records remain completely unaltered.
 
 ---

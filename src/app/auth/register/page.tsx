@@ -1,22 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { Store, Lock, Mail, User, Phone, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import {
+  Store,
+  Lock,
+  Mail,
+  User,
+  Phone,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    password: '',
-    address: '',
-    city: 'Firozpur',
-    pincode: '152002',
+    fullName: "",
+    phone: "",
+    email: "",
+    password: "",
+    address: "",
+    city: "Firozpur",
+    pincode: "152002",
   });
 
   const [loading, setLoading] = useState(false);
@@ -52,12 +61,12 @@ export default function RegisterPage() {
       } else {
         // Update profile table if user is instantly created
         if (data.user) {
-          await supabase.from('profiles').upsert({
+          await supabase.from("profiles").upsert({
             id: data.user.id,
             full_name: formData.fullName,
             phone: formData.phone,
             email: formData.email,
-            role: 'customer',
+            role: "customer",
             address: formData.address,
             city: formData.city,
             pincode: formData.pincode,
@@ -65,14 +74,14 @@ export default function RegisterPage() {
         }
 
         setSuccessMsg(
-          'Account created successfully! Redirecting you to sign in...'
+          "Account created successfully! Redirecting you to sign in...",
         );
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push("/auth/login");
         }, 1800);
       }
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Unable to register account.');
+      setErrorMsg(err?.message || "Unable to register account.");
     } finally {
       setLoading(false);
     }
@@ -86,7 +95,7 @@ export default function RegisterPage() {
             <Store className="w-7 h-7 text-pink-300" />
           </div>
           <span className="font-extrabold text-2xl font-serif text-[#590d22] uppercase tracking-wider">
-            BAJAJ KARYAN STORE
+            BAJAJ karyana STORE
           </span>
           <span className="text-xs text-rose-800 uppercase tracking-widest -mt-0.5">
             Create Customer Account
@@ -97,9 +106,12 @@ export default function RegisterPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-rose-100 shadow-sm space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">New Customer Registration</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              New Customer Registration
+            </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Save your address for quick ordering and easily track past requests.
+              Save your address for quick ordering and easily track past
+              requests.
             </p>
           </div>
 
@@ -222,8 +234,11 @@ export default function RegisterPage() {
           </form>
 
           <div className="pt-4 border-t border-rose-100 text-center text-xs text-gray-600">
-            Already have an account?{' '}
-            <Link href="/auth/login" className="font-bold text-[#800f2f] hover:underline">
+            Already have an account?{" "}
+            <Link
+              href="/auth/login"
+              className="font-bold text-[#800f2f] hover:underline"
+            >
               Sign In
             </Link>
           </div>

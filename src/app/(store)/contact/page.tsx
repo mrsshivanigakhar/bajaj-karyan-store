@@ -1,25 +1,39 @@
-import React from 'react';
-import Link from 'next/link';
-import { MapPin, Phone, Mail, Clock, MessageSquare, Store, Truck, ShieldCheck } from 'lucide-react';
-import { getStoreSettings } from '@/services/store-service';
-import { ContactFormClient } from './ContactFormClient';
+import React from "react";
+import Link from "next/link";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  MessageSquare,
+  Store,
+  Truck,
+  ShieldCheck,
+} from "lucide-react";
+import { getStoreSettings } from "@/services/store-service";
+import { ContactFormClient } from "./ContactFormClient";
 
 export const metadata = {
-  title: 'Contact Us — Bajaj Karyan Store Firozpur',
-  description: 'Get in touch with Bajaj Karyan Store in Firozpur for store orders, bulk inquiries, delivery requests, or feedback.',
+  title: "Contact Us — Bajaj karyana Store Firozpur",
+  description:
+    "Get in touch with Bajaj karyana Store in Firozpur for store orders, bulk inquiries, delivery requests, or feedback.",
 };
 
 export default async function ContactPage() {
   const settings = await getStoreSettings();
 
-  const phoneLink = settings.phone ? settings.phone.replace(/[^+\d]/g, '') : '+919876543210';
-  const emailLink = settings.email || 'contact@bajajkaryan.com';
-  const fullAddress = `${settings.address || 'Shop No. 14, Main Market, Near Clock Tower'}, ${settings.city || 'Firozpur'}, ${settings.state || 'Punjab'} - ${settings.pincode || '152002'}`;
+  const phoneLink = settings.phone
+    ? settings.phone.replace(/[^+\d]/g, "")
+    : "+919876543210";
+  const emailLink = settings.email || "contact@bajajkaryan.com";
+  const fullAddress = `${settings.address || "Shop No. 14, Main Market, Near Clock Tower"}, ${settings.city || "Firozpur"}, ${settings.state || "Punjab"} - ${settings.pincode || "152002"}`;
 
   // WhatsApp clean link
-  const rawDigits = settings.phone ? settings.phone.replace(/\D/g, '') : '919876543210';
-  const waNumber = rawDigits.startsWith('91') ? rawDigits : `91${rawDigits}`;
-  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent('Hello Bajaj Karyan Store, I have an inquiry regarding grocery orders.')}`;
+  const rawDigits = settings.phone
+    ? settings.phone.replace(/\D/g, "")
+    : "919876543210";
+  const waNumber = rawDigits.startsWith("91") ? rawDigits : `91${rawDigits}`;
+  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent("Hello Bajaj karyana Store, I have an inquiry regarding grocery orders.")}`;
 
   return (
     <div className="flex flex-col gap-12 sm:gap-16 pb-16">
@@ -32,11 +46,13 @@ export default async function ContactPage() {
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold font-serif tracking-tight">
-            Contact Bajaj Karyan Store
+            Contact Bajaj karyana Store
           </h1>
 
           <p className="text-sm sm:text-base text-rose-100/90 max-w-xl mx-auto leading-relaxed">
-            Have questions about product availability, bulk wedding confectionery, or our doorstep delivery in Firozpur? Reach out directly!
+            Have questions about product availability, bulk wedding
+            confectionery, or our doorstep delivery in Firozpur? Reach out
+            directly!
           </p>
         </div>
       </section>
@@ -54,7 +70,8 @@ export default async function ContactPage() {
                 Visit Our Store Counter
               </h2>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Walk into our Firozpur store or contact us via phone, WhatsApp, or email.
+                Walk into our Firozpur store or contact us via phone, WhatsApp,
+                or email.
               </p>
             </div>
 
@@ -65,8 +82,12 @@ export default async function ContactPage() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-gray-900">Store Address</h4>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5 leading-relaxed">{fullAddress}</p>
+                  <h4 className="font-bold text-sm text-gray-900">
+                    Store Address
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5 leading-relaxed">
+                    {fullAddress}
+                  </p>
                 </div>
               </div>
 
@@ -76,7 +97,9 @@ export default async function ContactPage() {
                   <Phone className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-bold text-sm text-gray-900">Phone & WhatsApp</h4>
+                  <h4 className="font-bold text-sm text-gray-900">
+                    Phone & WhatsApp
+                  </h4>
                   {settings.phone && (
                     <a
                       href={`tel:${phoneLink}`}
@@ -103,7 +126,9 @@ export default async function ContactPage() {
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-gray-900">Email Inquiries</h4>
+                  <h4 className="font-bold text-sm text-gray-900">
+                    Email Inquiries
+                  </h4>
                   <a
                     href={`mailto:${emailLink}`}
                     className="block text-xs sm:text-sm text-gray-600 hover:text-[#800f2f] mt-0.5 transition"
@@ -119,9 +144,12 @@ export default async function ContactPage() {
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-gray-900">Operating Hours</h4>
+                  <h4 className="font-bold text-sm text-gray-900">
+                    Operating Hours
+                  </h4>
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5 whitespace-pre-line leading-relaxed">
-                    {settings.opening_hours || 'Mon - Sat: 8:00 AM - 9:30 PM\nSun: 9:00 AM - 7:00 PM'}
+                    {settings.opening_hours ||
+                      "Mon - Sat: 8:00 AM - 9:30 PM\nSun: 9:00 AM - 7:00 PM"}
                   </p>
                 </div>
               </div>
@@ -138,7 +166,8 @@ export default async function ContactPage() {
                 Drop Us a Note
               </h2>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Fill in the form below and our store management will get back to you promptly.
+                Fill in the form below and our store management will get back to
+                you promptly.
               </p>
             </div>
 

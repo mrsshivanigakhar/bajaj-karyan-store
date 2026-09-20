@@ -43,11 +43,15 @@ export function MobileNav() {
                 className="flex flex-col items-center justify-center py-1 px-3 text-rose-200 hover:text-white relative transition"
               >
                 <div className="relative">
-                  <Icon className="w-5 h-5 text-pink-300" />
+                  <Icon
+                    className={`w-5 h-5 text-pink-300 transition-transform ${
+                      totalItemsCount > 0 ? 'animate-heartbeat-fast' : ''
+                    }`}
+                  />
                   {item.badge && (
                     <span
-                      key={item.badge}
-                      className="absolute -top-1.5 -right-2.5 bg-[#ff4d6d] text-white text-[10px] font-bold px-1 rounded-full min-w-[16px] text-center border border-[#590d22] animate-in zoom-in-75 duration-200"
+                      key={`mob-badge-${item.badge}`}
+                      className="absolute -top-1.5 -right-2.5 bg-[#ff4d6d] text-white text-[10px] font-bold px-1 rounded-full min-w-[16px] text-center border border-[#590d22] transition-transform animate-heartbeat-fast"
                     >
                       {item.badge}
                     </span>
